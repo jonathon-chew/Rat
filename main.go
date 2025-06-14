@@ -2,16 +2,16 @@ package main
 
 import (
 	"fmt"
-	"github.com/jonathon-chew/Aphrodite"
 	"os"
 	"regexp"
+
+	aphrodite "github.com/jonathon-chew/Aphrodite"
 )
 
 var RestrictedTokens = []string{
 	"if ",
 	"def ",
 	":",
-	"#",
 	"case",
 	"match",
 	" or ",
@@ -53,6 +53,12 @@ func PrintFile(fileName string) {
 	var byteLength int
 	var found bool
 
+	// namedFunction := regexp.MustCompile(`\s[\w\.]*\(`)
+	number, err := regexp.Compile("\\d")
+	if err != nil {
+		return
+	}
+
 	// Parse file
 	for i := 0; i < len(fileBytes); i++ {
 		fileByte := fileBytes[i]
@@ -61,31 +67,14 @@ func PrintFile(fileName string) {
 		for index, value := range RestrictedTokens {
 			byteLength = len(value)
 
-			// This looks at the rest of the line and makes it a comment
-			if fileBytes[i] == '#' {
-				newLineIndex := i
-				for fileBytes[newLineIndex] != '\n' {
-					newLineIndex += 1
-					byteLength += 1
-				}
-				aphrodite.Colour("Colour", "Yellow", string(fileBytes[i:i+byteLength]))
-				i += byteLength // because the for loop will add one!
-				found = true
-			}
+			/*       if i+byteLength > len(fileBytes[i:]) {
+			  aphrodite.Colour("color", "red", "ByteLength is too long")
+			  continue
+			} */
 
 			// TODO: Get this to look back and change what came before it
-			// if fileBytes[i] == '(' {
-			//   newLineIndex := i
-			//   for fileBytes[newLineIndex] != ' ' {
-			//     newLineIndex -= 1
-			//     byteLength += 1
-			//   }
-			//   aphrodite.Colour("Colour", "Yellow", string(fileBytes[i-byteLength:i]))
-			//   i += 1 // because the for loop will add one!
-			//   found = true
-			// }
 
-			if string(fileBytes[i:i+byteLength]) == value && found != true {
+			if string(fileBytes[i:i+byteLength]) == value && !found {
 				aphrodite.Colour("Colour", "Green", RestrictedTokens[index])
 				i += byteLength - 1 // because the for loop will add one!
 				found = true
@@ -93,13 +82,56 @@ func PrintFile(fileName string) {
 
 		}
 
-		number, _ := regexp.Match("\\d", []byte(string(fileBytes[i])))
-		if number {
+		// This looks at the rest of the line and makes it a comment
+		if fileBytes[i] == '#' {
+			newLineIndex := i
+			byteLength := 1
+			for newLineIndex < len(fileBytes) && fileBytes[newLineIndex] != '\n' {
+				newLineIndex += 1
+				byteLength += 1
+			}
+			aphrodite.Colour("Colour", "Yellow", string(fileBytes[i:i+byteLength]))
+			i += byteLength - 1
+			found = true
+		}
+
+		// This looks at the rest of the line and makes it a '
+		if fileBytes[i] == '\'' {
+			newLineIndex := i + 1
+			byteLength := 1
+			for newLineIndex < len(fileBytes) && fileBytes[newLineIndex] != '\'' && fileBytes[newLineIndex] != '\n' {
+				newLineIndex += 1
+				byteLength += 1
+			}
+			if fileBytes[newLineIndex] != '\n' {
+				aphrodite.Colour("Colour", "Yellow", string(fileBytes[i:i+byteLength+1]))
+				i += byteLength
+				found = true
+			}
+		}
+
+		// This looks at the rest of the line and makes it a "
+		if fileBytes[i] == '"' {
+			newLineIndex := i + 1
+			byteLength := 1
+			for newLineIndex < len(fileBytes) && fileBytes[newLineIndex] != '"' && fileBytes[newLineIndex] != '\n' {
+				newLineIndex += 1
+				byteLength += 1
+			}
+			if fileBytes[newLineIndex] != '\n' {
+				aphrodite.Colour("Colour", "Yellow", string(fileBytes[i:i+byteLength+1]))
+				i += byteLength
+				found = true
+			}
+		}
+
+		matches := number.FindString(string(fileBytes[i]))
+		if matches != "" && !found {
 			aphrodite.Colour("Colour", "Red", string(fileBytes[i]))
 			found = true
 		}
 
-		if found == false {
+		if !found {
 			aphrodite.Colour("Colour", "White", string(fileByte))
 		}
 
