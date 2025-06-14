@@ -1,10 +1,18 @@
 package cmd
 
 import (
-	_ "os"
 	"fmt"
+	_ "os"
+	"strings"
 )
 
-func cmd(Arguments []string){
-	fmt.Print(Arguments)
+func ParseArguments(Arguments []string) string {
+	for _, argument := range Arguments {
+		fmt.Println(argument)
+		if argument == strings.ToLower("--allow") || argument == strings.ToLower("--force") {
+			return "Allow"
+		}
+	}
+
+	return "Don't Allow"
 }

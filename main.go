@@ -7,6 +7,7 @@ import (
 	"strings"
 
 	aphrodite "github.com/jonathon-chew/Aphrodite"
+	"github.com/jonathon-chew/Rat/cmd"
 )
 
 var FileType = map[string]string{
@@ -48,7 +49,7 @@ var PythonRestrictedTokens = []string{
 	")",
 }
 
-func PrintFile(fileName string) {
+func PrintFile(fileName, fileExtension string) {
 	// Print relevent sections with relevent colouring
 	aphrodite.Colour("Colour", "Green", fmt.Sprintf("Read the file %s\n", fileName))
 
@@ -106,7 +107,7 @@ func PrintFile(fileName string) {
 		// (#3) TODO: Look to combine single and double quotes in the case of python this is treated as the same thing!
 
 		// This looks at the rest of the line and makes it a '
-		if fileBytes[i] == '\'' {
+		if fileBytes[i] == '\'' && fileBytes[i-1] != '\\' {
 			nextSingleQuote := i + 1 // Plus 1 because the current byte is a ' we're looking for the next one
 			for nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] != '\'' {
 				nextSingleQuote++
@@ -125,7 +126,7 @@ func PrintFile(fileName string) {
 		}
 
 		// This looks at the rest of the line and makes it a "
-		if fileBytes[i] == '"' {
+		if fileBytes[i] == '"' && fileBytes[i-1] != '\\' {
 			nextDoubleQuote := i + 1 // Plus 1 because the current byte is a ' we're looking for the next one
 			for nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] != '"' {
 				nextDoubleQuote++
@@ -167,6 +168,8 @@ func main() {
 		return
 	}
 
+	var flag string = cmd.ParseArguments(os.Args[1:])
+
 	// (#4) TODO: Add more language suuport
 
 	// (#5) TODO: JSON can use a lot of what python can BUT the test example
@@ -174,8 +177,8 @@ func main() {
 	for _, fileName := range os.Args[1:] {
 		fileExtension := strings.Split(fileName, ".")
 		convertedFileType := FileType[fileExtension[len(fileExtension)-1]]
-		if convertedFileType == "python" || convertedFileType == "json" {
-			PrintFile(fileName)
+		if convertedFileType == "python" || convertedFileType == "json" || flag == "Allow" {
+			PrintFile(fileName, convertedFileType)
 		} else {
 			aphrodite.Colour("Colour", "Red", fmt.Sprintf("[ERROR]: File extension %s is not yet supported\n", fileExtension[len(fileExtension)-1]))
 		}
