@@ -104,12 +104,12 @@ func PrintFile(fileName string) {
 		// This looks at the rest of the line and makes it a '
 		if fileBytes[i] == '\'' {
 			nextSingleQuote := i
-			for nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] != '\'' {
+			for nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] != '\'' && fileBytes[nextSingleQuote] != '\n' {
 				nextSingleQuote++
 			}
 
 			// We want to include the newline if it exists
-			if nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] == '\'' {
+			if nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] == '\'' && fileBytes[nextSingleQuote] != '\n' {
 				nextSingleQuote++ // include newline in slice
 			}
 
@@ -123,12 +123,12 @@ func PrintFile(fileName string) {
 		// This looks at the rest of the line and makes it a "
 		if fileBytes[i] == '"' {
 			nextDoubleQuote := i
-			for nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] != '"' {
+			for nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] != '"' && fileBytes[nextDoubleQuote] != '\n' {
 				nextDoubleQuote++
 			}
 
 			// We want to include the newline if it exists
-			if nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] == '"' {
+			if nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] == '"' && fileBytes[nextDoubleQuote] != '\n' {
 				nextDoubleQuote++ // include newline in slice
 			}
 
