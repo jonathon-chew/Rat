@@ -67,13 +67,6 @@ func PrintFile(fileName string) {
 		for index, value := range RestrictedTokens {
 			byteLength = len(value)
 
-			/*       if i+byteLength > len(fileBytes[i:]) {
-			  aphrodite.Colour("color", "red", "ByteLength is too long")
-			  continue
-			} */
-
-			// TODO: Get this to look back and change what came before it
-
 			if string(fileBytes[i:i+byteLength]) == value && !found {
 				aphrodite.Colour("Colour", "Green", RestrictedTokens[index])
 				i += byteLength - 1 // because the for loop will add one!
@@ -103,13 +96,13 @@ func PrintFile(fileName string) {
 
 		// This looks at the rest of the line and makes it a '
 		if fileBytes[i] == '\'' {
-			nextSingleQuote := i
-			for nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] != '\'' && fileBytes[nextSingleQuote] != '\n' {
+			nextSingleQuote := i + 1 // Plus 1 because the current byte is a ' we're looking for the next one
+			for nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] != '\'' {
 				nextSingleQuote++
 			}
 
 			// We want to include the newline if it exists
-			if nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] == '\'' && fileBytes[nextSingleQuote] != '\n' {
+			if nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] == '\'' {
 				nextSingleQuote++ // include newline in slice
 			}
 
@@ -122,13 +115,13 @@ func PrintFile(fileName string) {
 
 		// This looks at the rest of the line and makes it a "
 		if fileBytes[i] == '"' {
-			nextDoubleQuote := i
-			for nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] != '"' && fileBytes[nextDoubleQuote] != '\n' {
+			nextDoubleQuote := i + 1 // Plus 1 because the current byte is a ' we're looking for the next one
+			for nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] != '"' {
 				nextDoubleQuote++
 			}
 
 			// We want to include the newline if it exists
-			if nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] == '"' && fileBytes[nextDoubleQuote] != '\n' {
+			if nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] == '"' {
 				nextDoubleQuote++ // include newline in slice
 			}
 
