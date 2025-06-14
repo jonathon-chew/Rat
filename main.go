@@ -85,44 +85,58 @@ func PrintFile(fileName string) {
 		// This looks at the rest of the line and makes it a comment
 		if fileBytes[i] == '#' {
 			newLineIndex := i
-			byteLength := 1
 			for newLineIndex < len(fileBytes) && fileBytes[newLineIndex] != '\n' {
-				newLineIndex += 1
-				byteLength += 1
+				newLineIndex++
 			}
-			aphrodite.Colour("Colour", "Yellow", string(fileBytes[i:i+byteLength]))
-			i += byteLength - 1
+
+			// We want to include the newline if it exists
+			if newLineIndex < len(fileBytes) && fileBytes[newLineIndex] == '\n' {
+				newLineIndex++ // include newline in slice
+			}
+
+			comment := string(fileBytes[i:newLineIndex])
+			aphrodite.Colour("Colour", "Yellow", comment)
+
+			i = newLineIndex - 1 // -1 because the for loop will increment `i`
 			found = true
 		}
 
 		// This looks at the rest of the line and makes it a '
 		if fileBytes[i] == '\'' {
-			newLineIndex := i + 1
-			byteLength := 1
-			for newLineIndex < len(fileBytes) && fileBytes[newLineIndex] != '\'' && fileBytes[newLineIndex] != '\n' {
-				newLineIndex += 1
-				byteLength += 1
+			nextSingleQuote := i
+			for nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] != '\'' {
+				nextSingleQuote++
 			}
-			if fileBytes[newLineIndex] != '\n' {
-				aphrodite.Colour("Colour", "Yellow", string(fileBytes[i:i+byteLength+1]))
-				i += byteLength
-				found = true
+
+			// We want to include the newline if it exists
+			if nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] == '\'' {
+				nextSingleQuote++ // include newline in slice
 			}
+
+			comment := string(fileBytes[i:nextSingleQuote])
+			aphrodite.Colour("Colour", "Yellow", comment)
+
+			i = nextSingleQuote - 1 // -1 because the for loop will increment `i`
+			found = true
 		}
 
 		// This looks at the rest of the line and makes it a "
 		if fileBytes[i] == '"' {
-			newLineIndex := i + 1
-			byteLength := 1
-			for newLineIndex < len(fileBytes) && fileBytes[newLineIndex] != '"' && fileBytes[newLineIndex] != '\n' {
-				newLineIndex += 1
-				byteLength += 1
+			nextDoubleQuote := i
+			for nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] != '"' {
+				nextDoubleQuote++
 			}
-			if fileBytes[newLineIndex] != '\n' {
-				aphrodite.Colour("Colour", "Yellow", string(fileBytes[i:i+byteLength+1]))
-				i += byteLength
-				found = true
+
+			// We want to include the newline if it exists
+			if nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] == '"' {
+				nextDoubleQuote++ // include newline in slice
 			}
+
+			comment := string(fileBytes[i:nextDoubleQuote])
+			aphrodite.Colour("Colour", "Yellow", comment)
+
+			i = nextDoubleQuote - 1 // -1 because the for loop will increment `i`
+			found = true
 		}
 
 		matches := number.FindString(string(fileBytes[i]))
