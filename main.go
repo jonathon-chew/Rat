@@ -139,6 +139,10 @@ func PrintFile(fileName string) {
 			found = true
 		}
 
+		// (#1) TODO: Colour code functions
+
+		// (#2) TODO: Colour code variables \s[a-zA-Z]+[\s|=]
+
 		matches := number.FindString(string(fileBytes[i]))
 		if matches != "" && !found {
 			aphrodite.Colour("Colour", "Red", string(fileBytes[i]))
