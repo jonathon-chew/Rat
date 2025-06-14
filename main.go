@@ -4,11 +4,20 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"strings"
 
 	aphrodite "github.com/jonathon-chew/Aphrodite"
 )
 
-var RestrictedTokens = []string{
+var FileType = map[string]string{
+	"py":   "python",
+	"go":   "golang",
+	"ps1":  "powershell",
+	"json": "json",
+	"js":   "javascript",
+}
+
+var PythonRestrictedTokens = []string{
 	"if ",
 	"def ",
 	":",
@@ -64,11 +73,11 @@ func PrintFile(fileName string) {
 		fileByte := fileBytes[i]
 		found = false
 
-		for index, value := range RestrictedTokens {
+		for index, value := range PythonRestrictedTokens {
 			byteLength = len(value)
 
 			if string(fileBytes[i:i+byteLength]) == value && !found {
-				aphrodite.Colour("Colour", "Green", RestrictedTokens[index])
+				aphrodite.Colour("Colour", "Green", PythonRestrictedTokens[index])
 				i += byteLength - 1 // because the for loop will add one!
 				found = true
 			}
@@ -93,6 +102,8 @@ func PrintFile(fileName string) {
 			i = newLineIndex - 1 // -1 because the for loop will increment `i`
 			found = true
 		}
+
+		// (#3) TODO: Look to combine single and double quotes in the case of python this is treated as the same thing!
 
 		// This looks at the rest of the line and makes it a '
 		if fileBytes[i] == '\'' {
@@ -156,8 +167,18 @@ func main() {
 		return
 	}
 
+	// (#4) TODO: Add more language suuport
+
+	// (#5) TODO: JSON can use a lot of what python can BUT the test example
+
 	for _, fileName := range os.Args[1:] {
-		PrintFile(fileName)
+		fileExtension := strings.Split(fileName, ".")
+		convertedFileType := FileType[fileExtension[len(fileExtension)-1]]
+		if convertedFileType == "python" || convertedFileType == "json" {
+			PrintFile(fileName)
+		} else {
+			aphrodite.Colour("Colour", "Red", fmt.Sprintf("[ERROR]: File extension %s is not yet supported\n", fileExtension[len(fileExtension)-1]))
+		}
 	}
 
 }
