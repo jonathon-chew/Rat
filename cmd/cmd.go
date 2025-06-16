@@ -8,8 +8,10 @@ import (
 
 func ParseArguments(Arguments []string) string {
 	for _, argument := range Arguments {
-		fmt.Println(argument)
 		if argument == strings.ToLower("--allow") || argument == strings.ToLower("--force") {
+			if !strings.Contains(argument,"--") {
+				fmt.Println(argument)
+			}
 			return "Allow"
 		}
 	}

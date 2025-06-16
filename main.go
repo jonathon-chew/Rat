@@ -19,34 +19,7 @@ var FileType = map[string]string{
 }
 
 var PythonRestrictedTokens = []string{
-	"if ",
-	"def ",
-	":",
-	"case",
-	"match",
-	" or ",
-	" and ",
-	" = ",
-	" == ",
-	"return ",
-	"try",
-	"while ",
-	"with ",
-	"in ",
-	"is ",
-	"else:",
-	"elif ",
-	"for ",
-	" as ",
-	"assert ",
-	"True",
-	"False",
-	"{",
-	"}",
-	"[",
-	"]",
-	"(",
-	")",
+	"if ", "def ", ":", "case", "match", " or ", " and ", " = ", " == ", "return ", "try", "while ", "with ", "in ", "is ", "else:", "elif ", "for ", " as ", "assert ", "True", "False", "{", "}", "[", "]", "(", ")",
 }
 
 func PrintFile(fileName, fileExtension string) {
@@ -105,6 +78,8 @@ func PrintFile(fileName, fileExtension string) {
 		}
 
 		// (#3) TODO: Look to combine single and double quotes in the case of python this is treated as the same thing!
+
+		// (#6) TODO: The ' and " doesn't work in json as it doesn't know when to stop while in each other 's in "" makes everything a comment!
 
 		// This looks at the rest of the line and makes it a '
 		if fileBytes[i] == '\'' && fileBytes[i-1] != '\\' {
