@@ -19,7 +19,7 @@ var FileType = map[string]string{
 }
 
 var PythonRestrictedTokens = []string{
-	"if ", "def ", ":", "case", "match", " or ", " and ", " = ", " == ", "return ", "try", "while ", "with ", "in ", "is ", "else:", "elif ", "for ", " as ", "assert ", "True", "False", "{", "}", "[", "]", "(", ")",
+	"if ", "def ", ":", "case", "match ", " or ", " and ", " = ", " == ", "return ", "try", "while ", "with ", "in ", "is ", "else:", "elif ", "for ", " as ", "assert ", "True", "False", "{", "}", "[", "]", "(", ")",
 }
 
 func PrintFile(fileName, fileExtension string) {
@@ -59,7 +59,25 @@ func PrintFile(fileName, fileExtension string) {
 		}
 
 		// This looks at the rest of the line and makes it a comment
-		if fileBytes[i] == '#' {
+		if fileBytes[i] == '#' && fileExtension == "python" {
+			newLineIndex := i
+			for newLineIndex < len(fileBytes) && fileBytes[newLineIndex] != '\n' {
+				newLineIndex++
+			}
+
+			// We want to include the newline if it exists
+			if newLineIndex < len(fileBytes) && fileBytes[newLineIndex] == '\n' {
+				newLineIndex++ // include newline in slice
+			}
+
+			comment := string(fileBytes[i:newLineIndex])
+			aphrodite.Colour("Colour", "Yellow", comment)
+
+			i = newLineIndex - 1 // -1 because the for loop will increment `i`
+			found = true
+		}
+
+		if fileBytes[i] == '/' && fileBytes[i+1] == '/' && fileExtension == "golang" {
 			newLineIndex := i
 			for newLineIndex < len(fileBytes) && fileBytes[newLineIndex] != '\n' {
 				newLineIndex++
@@ -82,9 +100,9 @@ func PrintFile(fileName, fileExtension string) {
 		// (#6) TODO: The ' and " doesn't work in json as it doesn't know when to stop while in each other 's in "" makes everything a comment!
 
 		// This looks at the rest of the line and makes it a '
-		if fileBytes[i] == '\'' && fileBytes[i-1] != '\\' {
+		if fileBytes[i] == '\'' && string(fileBytes[i-1]) != string('\\') {
 			nextSingleQuote := i + 1 // Plus 1 because the current byte is a ' we're looking for the next one
-			for nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] != '\'' && fileBytes[i-1] != '\\' {
+			for nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] != '\'' && string(fileBytes[i-1]) != string('\\') {
 				nextSingleQuote++
 			}
 
@@ -101,9 +119,9 @@ func PrintFile(fileName, fileExtension string) {
 		}
 
 		// This looks at the rest of the line and makes it a "
-		if fileBytes[i] == '"' && fileBytes[i-1] != '\\' {
+		if fileBytes[i] == '"' && string(fileBytes[i-1]) != string('\\') {
 			nextDoubleQuote := i + 1 // Plus 1 because the current byte is a ' we're looking for the next one
-			for nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] != '"' && fileBytes[i-1] != '\\'  {
+			for nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] != '"' && string(fileBytes[i-1]) != string('\\') {
 				nextDoubleQuote++
 			}
 
@@ -122,6 +140,25 @@ func PrintFile(fileName, fileExtension string) {
 		// (#1) TODO: Colour code functions
 
 		// (#2) TODO: Colour code variables \s[a-zA-Z]+[\s|=]
+		if fileExtension == "powershell" || fileExtension == "php" {
+			if fileBytes[i] == '$' {
+				nextSpaceChr := i + 1 // Plus 1 because the current byte is a ' we're looking for the next one
+				for nextSpaceChr < len(fileBytes) && (fileBytes[nextSpaceChr] != ' ' && fileBytes[nextSpaceChr] != '=') {
+					nextSpaceChr++
+				}
+
+				// We want to include the newline if it exists
+				if nextSpaceChr < len(fileBytes) && (fileBytes[nextSpaceChr] != ' ' && fileBytes[nextSpaceChr] != '=') {
+					nextSpaceChr++ // include newline in slice
+				}
+
+				comment := string(fileBytes[i:nextSpaceChr])
+				aphrodite.Colour("Colour", "Blue", comment)
+
+				i = nextSpaceChr - 1 // -1 because the for loop will increment `i`
+				found = true
+			}
+		}
 
 		matches := number.FindString(string(fileBytes[i]))
 		if matches != "" && !found {
