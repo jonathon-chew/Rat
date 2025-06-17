@@ -84,7 +84,7 @@ func PrintFile(fileName, fileExtension string) {
 		// This looks at the rest of the line and makes it a '
 		if fileBytes[i] == '\'' && fileBytes[i-1] != '\\' {
 			nextSingleQuote := i + 1 // Plus 1 because the current byte is a ' we're looking for the next one
-			for nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] != '\'' {
+			for nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] != '\'' && fileBytes[i-1] != '\\' {
 				nextSingleQuote++
 			}
 
@@ -103,7 +103,7 @@ func PrintFile(fileName, fileExtension string) {
 		// This looks at the rest of the line and makes it a "
 		if fileBytes[i] == '"' && fileBytes[i-1] != '\\' {
 			nextDoubleQuote := i + 1 // Plus 1 because the current byte is a ' we're looking for the next one
-			for nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] != '"' {
+			for nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] != '"' && fileBytes[i-1] != '\\'  {
 				nextDoubleQuote++
 			}
 
