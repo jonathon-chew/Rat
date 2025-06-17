@@ -152,7 +152,7 @@ func main() {
 	for _, fileName := range os.Args[1:] {
 		fileExtension := strings.Split(fileName, ".")
 		convertedFileType := FileType[fileExtension[len(fileExtension)-1]]
-		if convertedFileType == "python" || convertedFileType == "json" || flag == "Allow" {
+		if convertedFileType == "python" || convertedFileType == "powershell" || convertedFileType == "json" || flag == "Allow" {
 			PrintFile(fileName, convertedFileType)
 		} else {
 			aphrodite.Colour("Colour", "Red", fmt.Sprintf("[ERROR]: File extension %s is not yet supported\n", fileExtension[len(fileExtension)-1]))
