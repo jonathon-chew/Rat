@@ -17,7 +17,7 @@ var PythonRestrictedTokens = []string{"if ", "def ", ":", "case", "match ", " or
 
 func PrintFile(fileName, fileExtension string) {
 	// Print relevent sections with relevent colouring
-	aphrodite.Colour("Colour", "Green", fmt.Sprintf("Read the file %s\n", fileName))
+	aphrodite.Colour("Colour", "Green", fmt.Sprintf("\nRead the file %s\n", fileName))
 
 	// Read file
 	fileBytes, err := os.ReadFile(fileName)
@@ -176,27 +176,28 @@ func main() {
 		return
 	}
 
-	fileName, flags := cmd.ParseArguments(os.Args[1:])
+	fileNames, flags := cmd.ParseArguments(os.Args[1:])
 
 	// (#4) TODO: Add more language suuport
 
 	// (#5) TODO: JSON can use a lot of what python can BUT the test example
 
-	// (#7) TODO: Allow for multiple files to be passed in!
-	fileExtension := strings.Split(fileName, ".")
-	convertedFileType := FileType[fileExtension[len(fileExtension)-1]]
+	for _, fileName := range fileNames {
+		fileExtension := strings.Split(fileName, ".")
+		convertedFileType := FileType[fileExtension[len(fileExtension)-1]]
 
-	for _, extension := range FileType {
-		if slices.Contains(flags, extension) {
-			convertedFileType = extension
+		for _, extension := range FileType {
+			if slices.Contains(flags, extension) {
+				convertedFileType = extension
+			}
 		}
-	}
 
-	if convertedFileType == "python" || convertedFileType == "powershell" || convertedFileType == "json" || slices.Contains(flags, "Allow") {
-		PrintFile(fileName, convertedFileType)
-	} else {
-		if !slices.Contains(flags, fileName) {
-			aphrodite.Colour("Colour", "Red", fmt.Sprintf("\n[ERROR]: File extension %s is not yet supported\n", fileExtension[len(fileExtension)-1]))
+		if convertedFileType == "python" || convertedFileType == "powershell" || convertedFileType == "json" || slices.Contains(flags, "Allow") {
+			PrintFile(fileName, convertedFileType)
+		} else {
+			if !slices.Contains(flags, fileName) {
+				aphrodite.Colour("Colour", "Red", fmt.Sprintf("\n[ERROR]: File extension %s is not yet supported\n", fileExtension[len(fileExtension)-1]))
+			}
 		}
 	}
 }

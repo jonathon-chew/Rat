@@ -6,9 +6,9 @@ import (
 	"strings"
 )
 
-func ParseArguments(Arguments []string) (string, []string) {
+func ParseArguments(Arguments []string) ([]string, []string) {
 	var returnArray []string
-	var fileName string
+	var fileName []string
 
 	for index, argument := range Arguments {
 
@@ -16,7 +16,7 @@ func ParseArguments(Arguments []string) (string, []string) {
 
 		_, err := os.Stat(argument)
 		if err == nil {
-			fileName = argument
+			fileName = append(fileName, argument)
 		}
 
 		if argument == "--allow" || argument == "--force" {
