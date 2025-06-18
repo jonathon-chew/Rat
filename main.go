@@ -182,6 +182,11 @@ func main() {
 
 	// (#5) TODO: JSON can use a lot of what python can BUT the test example
 
+	if len(fileNames) == 0 {
+		aphrodite.Colour("Colour", "Red", "[ERROR]: No file could be detected\n")
+		return
+	}
+
 	for _, fileName := range fileNames {
 		fileExtension := strings.Split(fileName, ".")
 		convertedFileType := FileType[fileExtension[len(fileExtension)-1]]
