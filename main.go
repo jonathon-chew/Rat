@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"os"
 	"regexp"
+	"slices"
 	"strings"
 
 	aphrodite "github.com/jonathon-chew/Aphrodite"
@@ -42,12 +43,15 @@ func PrintFile(fileName, fileExtension string) {
 		for index, value := range PythonRestrictedTokens {
 			byteLength = len(value)
 
-			if string(fileBytes[i:i+byteLength]) == value && !found {
-				aphrodite.Colour("Colour", "Green", PythonRestrictedTokens[index])
-				i += byteLength - 1 // because the for loop will add one!
-				found = true
+			if i+byteLength+1 < len(fileBytes[i:]) {
+				// fmt.Printf("Looking at: %d, and the rest of the file is %d, %t", i+byteLength+1, len(fileBytes[i:]), (i+byteLength > len(fileBytes[i:])))
+				// fmt.Print("\n")
+				if string(fileBytes[i:i+byteLength]) == value && !found {
+					aphrodite.Colour("Colour", "Green", PythonRestrictedTokens[index])
+					i += byteLength - 1 // because the for loop will add one!
+					found = true
+				}
 			}
-
 		}
 
 		// This looks at the rest of the line and makes it a comment
@@ -172,20 +176,26 @@ func main() {
 		return
 	}
 
-	var flag string = cmd.ParseArguments(os.Args[1:])
+	fileName, flags := cmd.ParseArguments(os.Args[1:])
 
 	// (#4) TODO: Add more language suuport
 
 	// (#5) TODO: JSON can use a lot of what python can BUT the test example
 
-	for _, fileName := range os.Args[1:] {
-		fileExtension := strings.Split(fileName, ".")
-		convertedFileType := FileType[fileExtension[len(fileExtension)-1]]
-		if convertedFileType == "python" || convertedFileType == "powershell" || convertedFileType == "json" || flag == "Allow" {
-			PrintFile(fileName, convertedFileType)
-		} else {
-			aphrodite.Colour("Colour", "Red", fmt.Sprintf("[ERROR]: File extension %s is not yet supported\n", fileExtension[len(fileExtension)-1]))
+	fileExtension := strings.Split(fileName, ".")
+	convertedFileType := FileType[fileExtension[len(fileExtension)-1]]
+
+	for _, extension := range FileType {
+		if slices.Contains(flags, extension) {
+			convertedFileType = extension
 		}
 	}
 
+	if convertedFileType == "python" || convertedFileType == "powershell" || convertedFileType == "json" || slices.Contains(flags, "Allow") {
+		PrintFile(fileName, convertedFileType)
+	} else {
+		if !slices.Contains(flags, fileName) {
+			aphrodite.Colour("Colour", "Red", fmt.Sprintf("\n[ERROR]: File extension %s is not yet supported\n", fileExtension[len(fileExtension)-1]))
+		}
+	}
 }
