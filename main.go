@@ -182,6 +182,7 @@ func main() {
 
 	// (#5) TODO: JSON can use a lot of what python can BUT the test example
 
+	// (#7) TODO: Allow for multiple files to be passed in!
 	fileExtension := strings.Split(fileName, ".")
 	convertedFileType := FileType[fileExtension[len(fileExtension)-1]]
 

@@ -1,4 +1,4 @@
-# 🌪 Rat (Go)
+# 🐀 Rat (Go)
 
 I couldn't get BAT to work for me - so I'm creating my own simplified version as a go binary
 
