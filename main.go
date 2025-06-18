@@ -10,17 +10,9 @@ import (
 	"github.com/jonathon-chew/Rat/cmd"
 )
 
-var FileType = map[string]string{
-	"py":   "python",
-	"go":   "golang",
-	"ps1":  "powershell",
-	"json": "json",
-	"js":   "javascript",
-}
+var FileType = map[string]string{"py": "python", "go": "golang", "ps1": "powershell", "json": "json", "js": "javascript"}
 
-var PythonRestrictedTokens = []string{
-	"if ", "def ", ":", "case", "match ", " or ", " and ", " = ", " == ", "return ", "try", "while ", "with ", "in ", "is ", "else:", "elif ", "for ", " as ", "assert ", "True", "False", "{", "}", "[", "]", "(", ")",
-}
+var PythonRestrictedTokens = []string{"if ", "def ", ":", "case", "match ", " or ", " and ", " = ", " == ", "return ", "try", "while ", "with ", "in ", "is ", "else:", "elif ", "for ", " as ", "assert ", "True", "False", "{", "}", "[", "]", "(", ")"}
 
 func PrintFile(fileName, fileExtension string) {
 	// Print relevent sections with relevent colouring
