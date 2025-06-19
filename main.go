@@ -197,10 +197,12 @@ func main() {
 			}
 		}
 
-		if convertedFileType == "python" || convertedFileType == "powershell" || convertedFileType == "json" || slices.Contains(flags, "Allow") {
+		var supportedFileTypes = []string{"python", "powershell", "json"}
+
+		if slices.Contains(supportedFileTypes, convertedFileType) || slices.Contains(flags, "Allow") {
 			PrintFile(fileName, convertedFileType)
 		} else {
-			if !slices.Contains(flags, fileName) {
+			if !slices.Contains(fileNames, fileName) {
 				aphrodite.Colour("Colour", "Red", fmt.Sprintf("\n[ERROR]: File extension %s is not yet supported\n", fileExtension[len(fileExtension)-1]))
 			}
 		}
