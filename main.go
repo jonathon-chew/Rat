@@ -43,7 +43,7 @@ func PrintFile(fileName, fileExtension string) {
 		for index, value := range PythonRestrictedTokens {
 			byteLength = len(value)
 
-			if i+byteLength+1 < len(fileBytes[i:]) {
+			if byteLength+1 < len(fileBytes[i:]) {
 				// fmt.Printf("Looking at: %d, and the rest of the file is %d, %t", i+byteLength+1, len(fileBytes[i:]), (i+byteLength > len(fileBytes[i:])))
 				// fmt.Print("\n")
 				if string(fileBytes[i:i+byteLength]) == value && !found {
@@ -202,6 +202,7 @@ func main() {
 		if slices.Contains(supportedFileTypes, convertedFileType) || slices.Contains(flags, "Allow") {
 			PrintFile(fileName, convertedFileType)
 		} else {
+			// Check the file name isn't in the flags - things like --allow or --file-type
 			if !slices.Contains(flags, fileName) {
 				aphrodite.Colour("Colour", "Red", fmt.Sprintf("\n[ERROR]: File extension %s is not yet supported\n", fileExtension[len(fileExtension)-1]))
 			}

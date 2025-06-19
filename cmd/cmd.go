@@ -25,6 +25,7 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 			aphrodite.Colour("Colour", "Green", "Pass in at least one file\n")
 			aphrodite.Colour("Colour", "Green", "You can use thte flag allow of force to force it for unknown / unsupported file types\n")
 			aphrodite.Colour("Colour", "Green", "You can use the file type flag to choose the type of colour coding - eg comment / variable declaration \n")
+			return []string{}, []string{}
 		}
 
 		if argument == "--allow" || argument == "--force" || argument == "-allow" || argument == "-force" {
