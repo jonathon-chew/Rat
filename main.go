@@ -30,7 +30,7 @@ func PrintFile(fileName, fileExtension string) {
 	var found bool
 
 	// namedFunction := regexp.MustCompile(`\s[\w\.]*\(`)
-	number, err := regexp.Compile("\\d")
+	number, err := regexp.Compile(`\d`)
 	if err != nil {
 		return
 	}
