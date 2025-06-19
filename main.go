@@ -202,7 +202,7 @@ func main() {
 		if slices.Contains(supportedFileTypes, convertedFileType) || slices.Contains(flags, "Allow") {
 			PrintFile(fileName, convertedFileType)
 		} else {
-			if !slices.Contains(fileNames, fileName) {
+			if !slices.Contains(flags, fileName) {
 				aphrodite.Colour("Colour", "Red", fmt.Sprintf("\n[ERROR]: File extension %s is not yet supported\n", fileExtension[len(fileExtension)-1]))
 			}
 		}
