@@ -60,7 +60,7 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 			returnArray = append(returnArray, "Allow")
 		}
 
-		if argument == "--file-type" || argument == "--filetype" || argument == "-file" {
+		if argument == "--file-type" || argument == "--filetype" || argument == "-filetype" || argument == "-file-type" {
 			if index+1 < len(Arguments) {
 				returnArray = append(returnArray, Arguments[index+1])
 			}
