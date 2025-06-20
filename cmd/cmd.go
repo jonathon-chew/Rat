@@ -10,15 +10,40 @@ import (
 
 func ParseArguments(Arguments []string) ([]string, []string) {
 	var returnArray []string
-	var fileName []string
+	var fileNames []string
 
 	for index, argument := range Arguments {
 
 		argument = strings.ToLower(argument)
 
+		if argument == "*" {
+			files, err := os.ReadDir(".")
+			if err == nil {
+				for _, eachFile := range files {
+					fileName := eachFile.Name()
+					if !eachFile.IsDir() {
+						fileNames = append(fileNames, fileName)
+					}
+				}
+			}
+		} else if strings.Contains(argument, "*") {
+			if len(argument) >= 1 {
+				passedInFileType := argument[1:]
+				files, err := os.ReadDir(".")
+				if err == nil {
+					for _, eachFile := range files {
+						fileName := eachFile.Name()
+						if !eachFile.IsDir() && strings.Contains(fileName, passedInFileType) {
+							fileNames = append(fileNames, fileName)
+						}
+					}
+				}
+			}
+		}
+
 		_, err := os.Stat(argument)
 		if err == nil {
-			fileName = append(fileName, argument)
+			fileNames = append(fileNames, argument)
 		}
 
 		if argument == "--help" || argument == "-help" {
@@ -42,5 +67,5 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 		}
 	}
 
-	return fileName, returnArray
+	return fileNames, returnArray
 }
