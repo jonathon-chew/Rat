@@ -139,7 +139,7 @@ func PrintFile(fileName, fileExtension string) {
 		if fileExtension == "powershell" || fileExtension == "php" {
 			if fileBytes[i] == '$' {
 				nextSpaceChr := i + 1 // Plus 1 because the current byte is a ' we're looking for the next one
-				for nextSpaceChr < len(fileBytes) && (fileBytes[nextSpaceChr] != ' ' && fileBytes[nextSpaceChr] != '=') {
+				for nextSpaceChr < len(fileBytes) && (fileBytes[nextSpaceChr] != ' ' && fileBytes[nextSpaceChr] != '=' && fileBytes[nextSpaceChr] != '.' && fileBytes[nextSpaceChr] != '(') {
 					nextSpaceChr++
 				}
 
