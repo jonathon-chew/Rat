@@ -15,6 +15,8 @@ var FileType = map[string]string{"py": "python", "go": "golang", "ps1": "powersh
 
 var PythonRestrictedTokens = []string{"if ", "def ", ":", "case", "match ", " or ", " and ", " = ", " == ", "return ", "try", "while ", "with ", "in ", "is ", "else:", "elif ", "for ", " as ", "assert ", "True", "False", "{", "}", "[", "]", "(", ")"}
 
+var JavascriptRestrictedTokens = []string{"const ", "var ", "let ", "new "}
+
 func PrintFile(fileName, fileExtension string) {
 	// Print relevent sections with relevent colouring
 	aphrodite.Colour("Colour", "Green", fmt.Sprintf("\nRead the file %s\n", fileName))
@@ -50,6 +52,20 @@ func PrintFile(fileName, fileExtension string) {
 					aphrodite.Colour("Colour", "Green", PythonRestrictedTokens[index])
 					i += byteLength - 1 // because the for loop will add one!
 					found = true
+				}
+			}
+		}
+
+		if fileExtension == "javascript" {
+			for index, value := range JavascriptRestrictedTokens {
+				byteLength = len(value)
+
+				if byteLength+1 < len(fileBytes[i:]) {
+					if string(fileBytes[i:i+byteLength]) == value && !found {
+						aphrodite.Colour("Colour", "Blue", JavascriptRestrictedTokens[index])
+						i += byteLength - 1
+						found = true
+					}
 				}
 			}
 		}
@@ -181,6 +197,8 @@ func main() {
 	// (#4) TODO: Add more language suuport
 
 	// (#5) TODO: JSON can use a lot of what python can BUT the test example
+
+	// (#7) TODO: Look at whether to return instead of print, and print at the end for speed? Look at is printing including escape for every chr and slowing it down as well!
 
 	if len(fileNames) == 0 {
 		aphrodite.Colour("Colour", "Red", "[ERROR]: No file could be detected\n")
