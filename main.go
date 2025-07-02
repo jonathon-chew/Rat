@@ -15,7 +15,7 @@ var FileType = map[string]string{"py": "python", "go": "golang", "ps1": "powersh
 
 var PythonRestrictedTokens = []string{"if ", "def ", ":", "case", "match ", " or ", " and ", " = ", " == ", "return ", "try", "while ", "with ", "in ", "is ", "else:", "elif ", "for ", " as ", "assert ", "True", "False", "{", "}", "[", "]", "(", ")"}
 
-var JavascriptRestrictedTokens = []string{"const ", "var ", "let ", "new "}
+var JavascriptRestrictedTokens = []string{"const ", "var ", "let ", "new ", "&&", "||"}
 
 func PrintFile(fileName, fileExtension string) {
 	// Print relevent sections with relevent colouring
@@ -89,7 +89,7 @@ func PrintFile(fileName, fileExtension string) {
 			found = true
 		}
 
-		if fileBytes[i] == '/' && fileBytes[i+1] == '/' && fileExtension == "golang" {
+		if fileBytes[i] == '/' && fileBytes[i+1] == '/' && (fileExtension == "golang" || fileExtension == "javascript") {
 			newLineIndex := i
 			for newLineIndex < len(fileBytes) && fileBytes[newLineIndex] != '\n' {
 				newLineIndex++
