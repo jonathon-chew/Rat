@@ -19,12 +19,12 @@ var JavascriptRestrictedTokens = []string{"const ", "var ", "let ", "new ", "&&"
 
 func PrintFile(fileName, fileExtension string) {
 	// Print relevent sections with relevent colouring
-	aphrodite.PrintColour("Colour", "Green", fmt.Sprintf("\nRead the file %s\n", fileName))
+	aphrodite.PrintColour( "Green", fmt.Sprintf("\nRead the file %s\n", fileName))
 
 	// Read file
 	fileBytes, err := os.ReadFile(fileName)
 	if err != nil {
-		aphrodite.PrintColour("Colour", "Red", fmt.Sprintf("Issue reading the file %s\n", err))
+		aphrodite.PrintColour( "Red", fmt.Sprintf("Issue reading the file %s\n", err))
 		return
 	}
 
@@ -49,7 +49,7 @@ func PrintFile(fileName, fileExtension string) {
 				// fmt.Printf("Looking at: %d, and the rest of the file is %d, %t", i+byteLength+1, len(fileBytes[i:]), (i+byteLength > len(fileBytes[i:])))
 				// fmt.Print("\n")
 				if string(fileBytes[i:i+byteLength]) == value && !found {
-					aphrodite.PrintColour("Colour", "Green", PythonRestrictedTokens[index])
+					aphrodite.PrintColour( "Green", PythonRestrictedTokens[index])
 					i += byteLength - 1 // because the for loop will add one!
 					found = true
 				}
@@ -62,7 +62,7 @@ func PrintFile(fileName, fileExtension string) {
 
 				if byteLength+1 < len(fileBytes[i:]) {
 					if string(fileBytes[i:i+byteLength]) == value && !found {
-						aphrodite.PrintColour("Colour", "Blue", JavascriptRestrictedTokens[index])
+						aphrodite.PrintColour( "Blue", JavascriptRestrictedTokens[index])
 						i += byteLength - 1
 						found = true
 					}
@@ -83,7 +83,7 @@ func PrintFile(fileName, fileExtension string) {
 			}
 
 			comment := string(fileBytes[i:newLineIndex])
-			aphrodite.PrintColour("Colour", "Yellow", comment)
+			aphrodite.PrintColour( "Yellow", comment)
 
 			i = newLineIndex - 1 // -1 because the for loop will increment `i`
 			found = true
@@ -101,7 +101,7 @@ func PrintFile(fileName, fileExtension string) {
 			}
 
 			comment := string(fileBytes[i:newLineIndex])
-			aphrodite.PrintColour("Colour", "Yellow", comment)
+			aphrodite.PrintColour( "Yellow", comment)
 
 			i = newLineIndex - 1 // -1 because the for loop will increment `i`
 			found = true
@@ -124,7 +124,7 @@ func PrintFile(fileName, fileExtension string) {
 			}
 
 			comment := string(fileBytes[i:nextSingleQuote])
-			aphrodite.PrintColour("Colour", "Yellow", comment)
+			aphrodite.PrintColour( "Yellow", comment)
 
 			i = nextSingleQuote - 1 // -1 because the for loop will increment `i`
 			found = true
@@ -143,7 +143,7 @@ func PrintFile(fileName, fileExtension string) {
 			}
 
 			comment := string(fileBytes[i:nextDoubleQuote])
-			aphrodite.PrintColour("Colour", "Yellow", comment)
+			aphrodite.PrintColour( "Yellow", comment)
 
 			i = nextDoubleQuote - 1 // -1 because the for loop will increment `i`
 			found = true
@@ -165,7 +165,7 @@ func PrintFile(fileName, fileExtension string) {
 				}
 
 				comment := string(fileBytes[i:nextSpaceChr])
-				aphrodite.PrintColour("Colour", "Blue", comment)
+				aphrodite.PrintColour( "Blue", comment)
 
 				i = nextSpaceChr - 1 // -1 because the for loop will increment `i`
 				found = true
@@ -174,12 +174,12 @@ func PrintFile(fileName, fileExtension string) {
 
 		matches := number.FindString(string(fileBytes[i]))
 		if matches != "" && !found {
-			aphrodite.PrintColour("Colour", "Red", string(fileBytes[i]))
+			aphrodite.PrintColour( "Red", string(fileBytes[i]))
 			found = true
 		}
 
 		if !found {
-			aphrodite.PrintColour("Colour", "White", string(fileByte))
+			aphrodite.PrintColour( "White", string(fileByte))
 		}
 
 	}
@@ -188,7 +188,7 @@ func PrintFile(fileName, fileExtension string) {
 func main() {
 
 	if len(os.Args) == 1 {
-		aphrodite.PrintColour("Colour", "Red", "[ERROR]: Not enough arguments provided\n")
+		aphrodite.PrintColour( "Red", "[ERROR]: Not enough arguments provided\n")
 		return
 	}
 
@@ -201,7 +201,7 @@ func main() {
 	// (#7) TODO: Look at whether to return instead of print, and print at the end for speed? Look at is printing including escape for every chr and slowing it down as well!
 
 	if len(fileNames) == 0 {
-		aphrodite.PrintColour("Colour", "Red", "[ERROR]: No file could be detected\n")
+		aphrodite.PrintColour( "Red", "[ERROR]: No file could be detected\n")
 		return
 	}
 
@@ -222,7 +222,7 @@ func main() {
 		} else {
 			// Check the file name isn't in the flags - things like --allow or --file-type
 			if !slices.Contains(flags, fileName) {
-				aphrodite.PrintColour("Colour", "Red", fmt.Sprintf("\n[ERROR]: File extension %s is not yet supported\n", fileExtension[len(fileExtension)-1]))
+				aphrodite.PrintColour( "Red", fmt.Sprintf("\n[ERROR]: File extension %s is not yet supported\n", fileExtension[len(fileExtension)-1]))
 			}
 		}
 	}
