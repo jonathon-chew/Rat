@@ -47,10 +47,10 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 		}
 
 		if argument == "--help" || argument == "-help" {
-			aphrodite.Colour("Colour", "Green", "Pass in at least one file\n")
-			aphrodite.Colour("Colour", "Green", "You can use thte flag allow of force to force it for unknown / unsupported file types\n")
-			aphrodite.Colour("Colour", "Green", "You can use --file-type to dictate the file type!")
-			aphrodite.Colour("Colour", "Green", "You can use the file type flag to choose the type of colour coding - eg comment / variable declaration \n")
+			aphrodite.PrintColour( "Green", "Pass in at least one file\n")
+			aphrodite.PrintColour( "Green", "You can use thte flag allow of force to force it for unknown / unsupported file types\n")
+			aphrodite.PrintColour( "Green", "You can use --file-type to dictate the file type!")
+			aphrodite.PrintColour( "Green", "You can use the file type flag to choose the type of colour coding - eg comment / variable declaration \n")
 			return []string{}, []string{}
 		}
 
