@@ -17,14 +17,26 @@ var PythonRestrictedTokens = []string{"if ", "def ", ":", "case", "match ", " or
 
 var JavascriptRestrictedTokens = []string{"const ", "var ", "let ", "new ", "&&", "||"}
 
+func notPossessiveComma(checkBytes string) bool {
+
+	// namedFunction := regexp.MustCompile(`\s[\w\.]*\(`)
+	possessive_comma, err := regexp.Compile(`[a-zA-Z]'[a-zA-Z]`)
+	if err != nil {
+		return false
+	}
+
+	matches := possessive_comma.FindString(checkBytes)
+	return matches != ""
+}
+
 func PrintFile(fileName, fileExtension string) {
 	// Print relevent sections with relevent colouring
-	aphrodite.PrintColour( "Green", fmt.Sprintf("\nRead the file %s\n", fileName))
+	aphrodite.PrintColour("Green", fmt.Sprintf("\nRead the file %s\n", fileName))
 
 	// Read file
 	fileBytes, err := os.ReadFile(fileName)
 	if err != nil {
-		aphrodite.PrintColour( "Red", fmt.Sprintf("Issue reading the file %s\n", err))
+		aphrodite.PrintColour("Red", fmt.Sprintf("Issue reading the file %s\n", err))
 		return
 	}
 
@@ -49,7 +61,7 @@ func PrintFile(fileName, fileExtension string) {
 				// fmt.Printf("Looking at: %d, and the rest of the file is %d, %t", i+byteLength+1, len(fileBytes[i:]), (i+byteLength > len(fileBytes[i:])))
 				// fmt.Print("\n")
 				if string(fileBytes[i:i+byteLength]) == value && !found {
-					aphrodite.PrintColour( "Green", PythonRestrictedTokens[index])
+					aphrodite.PrintColour("Green", PythonRestrictedTokens[index])
 					i += byteLength - 1 // because the for loop will add one!
 					found = true
 				}
@@ -62,7 +74,7 @@ func PrintFile(fileName, fileExtension string) {
 
 				if byteLength+1 < len(fileBytes[i:]) {
 					if string(fileBytes[i:i+byteLength]) == value && !found {
-						aphrodite.PrintColour( "Blue", JavascriptRestrictedTokens[index])
+						aphrodite.PrintColour("Blue", JavascriptRestrictedTokens[index])
 						i += byteLength - 1
 						found = true
 					}
@@ -71,7 +83,7 @@ func PrintFile(fileName, fileExtension string) {
 		}
 
 		// This looks at the rest of the line and makes it a comment
-		if fileBytes[i] == '#' && fileExtension == "python" {
+		if fileBytes[i] == '#' && (fileExtension == "python" || fileExtension == "powershell") {
 			newLineIndex := i
 			for newLineIndex < len(fileBytes) && fileBytes[newLineIndex] != '\n' {
 				newLineIndex++
@@ -83,7 +95,7 @@ func PrintFile(fileName, fileExtension string) {
 			}
 
 			comment := string(fileBytes[i:newLineIndex])
-			aphrodite.PrintColour( "Yellow", comment)
+			aphrodite.PrintColour("Yellow", comment)
 
 			i = newLineIndex - 1 // -1 because the for loop will increment `i`
 			found = true
@@ -101,18 +113,16 @@ func PrintFile(fileName, fileExtension string) {
 			}
 
 			comment := string(fileBytes[i:newLineIndex])
-			aphrodite.PrintColour( "Yellow", comment)
+			aphrodite.PrintColour("Yellow", comment)
 
 			i = newLineIndex - 1 // -1 because the for loop will increment `i`
 			found = true
 		}
 
-		// (#3) TODO: Look to combine single and double quotes in the case of python this is treated as the same thing!
-
-		// (#6) TODO: The ' and " doesn't work in json as it doesn't know when to stop while in each other 's in "" makes everything a comment!
+		// TODO: Work out how to do escape quotes
 
 		// This looks at the rest of the line and makes it a '
-		if fileBytes[i] == '\'' && string(fileBytes[i-1]) != string('\\') {
+		if fileBytes[i] == '\'' && string(fileBytes[i-1]) != string('\\') && notPossessiveComma(string(fileBytes[i-1]+fileBytes[i]+fileBytes[i+1])) {
 			nextSingleQuote := i + 1 // Plus 1 because the current byte is a ' we're looking for the next one
 			for nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] != '\'' && string(fileBytes[i-1]) != string('\\') {
 				nextSingleQuote++
@@ -124,14 +134,14 @@ func PrintFile(fileName, fileExtension string) {
 			}
 
 			comment := string(fileBytes[i:nextSingleQuote])
-			aphrodite.PrintColour( "Yellow", comment)
+			aphrodite.PrintColour("Yellow", comment)
 
 			i = nextSingleQuote - 1 // -1 because the for loop will increment `i`
 			found = true
 		}
 
 		// This looks at the rest of the line and makes it a "
-		if fileBytes[i] == '"' && string(fileBytes[i-1]) != string('\\') {
+		if fileBytes[i] == '"' && fileBytes[i-1] != '\\' {
 			nextDoubleQuote := i + 1 // Plus 1 because the current byte is a ' we're looking for the next one
 			for nextDoubleQuote < len(fileBytes) && fileBytes[nextDoubleQuote] != '"' && string(fileBytes[i-1]) != string('\\') {
 				nextDoubleQuote++
@@ -143,7 +153,7 @@ func PrintFile(fileName, fileExtension string) {
 			}
 
 			comment := string(fileBytes[i:nextDoubleQuote])
-			aphrodite.PrintColour( "Yellow", comment)
+			aphrodite.PrintColour("Yellow", comment)
 
 			i = nextDoubleQuote - 1 // -1 because the for loop will increment `i`
 			found = true
@@ -165,7 +175,7 @@ func PrintFile(fileName, fileExtension string) {
 				}
 
 				comment := string(fileBytes[i:nextSpaceChr])
-				aphrodite.PrintColour( "Blue", comment)
+				aphrodite.PrintColour("Blue", comment)
 
 				i = nextSpaceChr - 1 // -1 because the for loop will increment `i`
 				found = true
@@ -174,12 +184,12 @@ func PrintFile(fileName, fileExtension string) {
 
 		matches := number.FindString(string(fileBytes[i]))
 		if matches != "" && !found {
-			aphrodite.PrintColour( "Red", string(fileBytes[i]))
+			aphrodite.PrintColour("Red", string(fileBytes[i]))
 			found = true
 		}
 
 		if !found {
-			aphrodite.PrintColour( "White", string(fileByte))
+			aphrodite.PrintColour("White", string(fileByte))
 		}
 
 	}
@@ -188,7 +198,7 @@ func PrintFile(fileName, fileExtension string) {
 func main() {
 
 	if len(os.Args) == 1 {
-		aphrodite.PrintColour( "Red", "[ERROR]: Not enough arguments provided\n")
+		aphrodite.PrintColour("Red", "[ERROR]: Not enough arguments provided\n")
 		return
 	}
 
@@ -201,7 +211,7 @@ func main() {
 	// (#7) TODO: Look at whether to return instead of print, and print at the end for speed? Look at is printing including escape for every chr and slowing it down as well!
 
 	if len(fileNames) == 0 {
-		aphrodite.PrintColour( "Red", "[ERROR]: No file could be detected\n")
+		aphrodite.PrintColour("Red", "[ERROR]: No file could be detected\n")
 		return
 	}
 
@@ -222,7 +232,7 @@ func main() {
 		} else {
 			// Check the file name isn't in the flags - things like --allow or --file-type
 			if !slices.Contains(flags, fileName) {
-				aphrodite.PrintColour( "Red", fmt.Sprintf("\n[ERROR]: File extension %s is not yet supported\n", fileExtension[len(fileExtension)-1]))
+				aphrodite.PrintColour("Red", fmt.Sprintf("\n[ERROR]: File extension %s is not yet supported\n", fileExtension[len(fileExtension)-1]))
 			}
 		}
 	}
