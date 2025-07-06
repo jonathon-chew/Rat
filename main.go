@@ -119,7 +119,7 @@ func PrintFile(fileName, fileExtension string) {
 			found = true
 		}
 
-		// TODO: Work out how to do escape quotes
+		// (#8) TODO: Work out how to do escape quotes
 
 		// This looks at the rest of the line and makes it a '
 		if fileBytes[i] == '\'' && string(fileBytes[i-1]) != string('\\') && notPossessiveComma(string(fileBytes[i-1]+fileBytes[i]+fileBytes[i+1])) {
