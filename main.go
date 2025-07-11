@@ -122,22 +122,26 @@ func PrintFile(fileName, fileExtension string) {
 		// (#8) TODO: Work out how to do escape quotes
 
 		// This looks at the rest of the line and makes it a '
-		if fileBytes[i] == '\'' && string(fileBytes[i-1]) != string('\\') && notPossessiveComma(string(fileBytes[i-1]+fileBytes[i]+fileBytes[i+1])) {
-			nextSingleQuote := i + 1 // Plus 1 because the current byte is a ' we're looking for the next one
-			for nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] != '\'' && string(fileBytes[i-1]) != string('\\') {
-				nextSingleQuote++
+		if fileBytes[i] == '\'' && string(fileBytes[i-1]) != string('\\') {
+			if len(fileBytes[i:]) > 1 {
+				if notPossessiveComma(string(fileBytes[i-1 : i+1])) {
+					nextSingleQuote := i + 1 // Plus 1 because the current byte is a ' we're looking for the next one
+					for nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] != '\'' && string(fileBytes[i-1]) != string('\\') {
+						nextSingleQuote++
+					}
+
+					// We want to include the newline if it exists
+					if nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] == '\'' {
+						nextSingleQuote++ // include newline in slice
+					}
+
+					comment := string(fileBytes[i:nextSingleQuote])
+					aphrodite.PrintColour("Yellow", comment)
+
+					i = nextSingleQuote - 1 // -1 because the for loop will increment `i`
+					found = true
+				}
 			}
-
-			// We want to include the newline if it exists
-			if nextSingleQuote < len(fileBytes) && fileBytes[nextSingleQuote] == '\'' {
-				nextSingleQuote++ // include newline in slice
-			}
-
-			comment := string(fileBytes[i:nextSingleQuote])
-			aphrodite.PrintColour("Yellow", comment)
-
-			i = nextSingleQuote - 1 // -1 because the for loop will increment `i`
-			found = true
 		}
 
 		// This looks at the rest of the line and makes it a "
