@@ -12,8 +12,11 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 	var returnArray []string
 	var fileNames []string
 
-	for index, argument := range Arguments {
+	var file, findWord string
 
+	for index := 0; index < len(Arguments); index++ {
+
+		argument := Arguments[index]
 		argument = strings.ToLower(argument)
 
 		if argument == "*" {
@@ -47,11 +50,11 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 		}
 
 		if argument == "--help" || argument == "-help" {
-			aphrodite.PrintColour( "Green", "Pass in at least one file\n")
-			aphrodite.PrintColour( "Green", "You can use thte flag allow of force to force it for unknown / unsupported file types\n")
-			aphrodite.PrintColour( "Green", "You can use --file-type to dictate the file type!")
-			aphrodite.PrintColour( "Green", "You can use the file type flag to choose the type of colour coding - eg comment / variable declaration \n")
-			return []string{}, []string{}
+			aphrodite.PrintColour("Green", "Pass in at least one file\n")
+			aphrodite.PrintColour("Green", "You can use the flag allow of force to force it for unknown / unsupported file types\n")
+			aphrodite.PrintColour("Green", "You can use --file-type to dictate the file type!")
+			aphrodite.PrintColour("Green", "You can use the file type flag to choose the type of colour coding - eg comment / variable declaration \n")
+			return []string{}, []string{"help_menu"}
 		}
 
 		if argument == "--allow" || argument == "--force" || argument == "-allow" || argument == "-force" {
@@ -66,6 +69,33 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 				returnArray = append(returnArray, Arguments[index+1])
 			}
 		}
+
+		if argument == "--file" || argument == "-f" {
+			if index+1 >= len(Arguments) {
+				aphrodite.PrintError("Missing filename after --file")
+				return []string{}, []string{}
+			}
+			next := Arguments[index+1]
+			if _, err := os.Stat(next); err != nil {
+				aphrodite.PrintError(fmt.Sprintf("File not found or inaccessible: %s", next))
+				return []string{}, []string{}
+			}
+			file = next
+			index++
+		}
+
+		if argument == "--word" || argument == "-w" {
+			if index+1 >= len(Arguments) {
+				aphrodite.PrintError("Missing word after --word")
+				return []string{}, []string{}
+			}
+			findWord = Arguments[index+1]
+			index++
+		}
+	}
+
+	if findWord != "" && file != "" {
+		return []string{file}, []string{"Plain_File", findWord}
 	}
 
 	return fileNames, returnArray

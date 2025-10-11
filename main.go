@@ -214,6 +214,10 @@ func main() {
 
 	// (#7) TODO: Look at whether to return instead of print, and print at the end for speed? Look at is printing including escape for every chr and slowing it down as well!
 
+	if len(flags) == 1 && flags[0] == "help_menu" {
+		return // as to not return a error when the help menu has been selected
+	}
+
 	if len(fileNames) == 0 {
 		aphrodite.PrintColour("Red", "[ERROR]: No file could be detected\n")
 		return
@@ -233,6 +237,8 @@ func main() {
 
 		if slices.Contains(supportedFileTypes, convertedFileType) || slices.Contains(flags, "Allow") {
 			PrintFile(fileName, convertedFileType)
+		} else if slices.Contains(flags, "Plain_File") {
+			plain_file(fileName, flags[1])
 		} else {
 			// Check the file name isn't in the flags - things like --allow or --file-type
 			if !slices.Contains(flags, fileName) {
