@@ -50,10 +50,24 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 		}
 
 		if argument == "--help" || argument == "-help" {
-			aphrodite.PrintColour("Green", "Pass in at least one file\n")
-			aphrodite.PrintColour("Green", "You can use the flag allow of force to force it for unknown / unsupported file types\n")
-			aphrodite.PrintColour("Green", "You can use --file-type to dictate the file type!")
-			aphrodite.PrintColour("Green", "You can use the file type flag to choose the type of colour coding - eg comment / variable declaration \n")
+			// aphrodite.PrintColour("Green", "Pass in at least one file\n")
+			// aphrodite.PrintColour("Green", "You can use the flag allow of force to force it for unknown / unsupported file types\n")
+			// aphrodite.PrintColour("Green", "You can use --file-type to dictate the file type!\n")
+			// aphrodite.PrintColour("Green", "You can use the file type flag to choose the type of colour coding - eg comment / variable declaration \n")
+			aphrodite.PrintBold("Purple", "Arguments:\n")
+			aphrodite.PrintBold("Cyan", "*\n")
+			aphrodite.PrintInfo("This can be used to do this on all files in the current directory, or all files of a certain type ie *.py would be all python files, it will only print on supported files unless the force flag is also used\n\n")
+			aphrodite.PrintBold("Cyan", "--help\n")
+			aphrodite.PrintInfo("Show all the flags\n\n")
+			aphrodite.PrintBold("Cyan", "--force --allow\n")
+			aphrodite.PrintInfo("You can use the flag allow of force to force it for unknown / unsupported file types\n\n")
+			aphrodite.PrintBold("Cyan", "--file-type\n")
+			aphrodite.PrintInfo("You can use --file-type to dictate the file type!\n\n")
+			aphrodite.PrintBold("Cyan", "--file\n")
+			aphrodite.PrintInfo("You can use this to pass in a file of any type if you just want to highlight a specific word in the file and make it stand out\n\n")
+			aphrodite.PrintBold("Cyan", "--word\n")
+			aphrodite.PrintInfo("You use this in conjunction with the file flag to denote which word in the file you are looking for\n\n")
+
 			return []string{}, []string{"help_menu"}
 		}
 
