@@ -1,4 +1,4 @@
-package main
+package plainFile
 
 import (
 	"fmt"
@@ -7,7 +7,7 @@ import (
 	aphrodite "github.com/jonathon-chew/Aphrodite"
 )
 
-func plain_file(file, findWord string) {
+func Parse_plain_file(file, findWord string) {
 
 	fileBytes, err := os.ReadFile(file)
 	if err != nil {

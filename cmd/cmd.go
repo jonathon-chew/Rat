@@ -9,15 +9,11 @@ import (
 )
 
 func ParseArguments(Arguments []string) ([]string, []string) {
-	var returnArray []string
-	var fileNames []string
-
+	var fileNames, flagsArray []string
 	var file, findWord string
 
 	for index := 0; index < len(Arguments); index++ {
-
-		argument := Arguments[index]
-		argument = strings.ToLower(argument)
+		argument := strings.ToLower(Arguments[index])
 
 		if argument == "*" {
 			files, err := os.ReadDir(".")
@@ -49,6 +45,9 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 			fileNames = append(fileNames, argument)
 		}
 
+		// -----------
+		// Flag section
+		//------------
 		if argument == "--help" || argument == "-help" {
 			// aphrodite.PrintColour("Green", "Pass in at least one file\n")
 			// aphrodite.PrintColour("Green", "You can use the flag allow of force to force it for unknown / unsupported file types\n")
@@ -75,12 +74,12 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 			if !strings.Contains(argument, "--") {
 				fmt.Println(argument)
 			}
-			returnArray = append(returnArray, "Allow")
+			flagsArray = append(flagsArray, "Allow")
 		}
 
 		if argument == "--file-type" || argument == "--filetype" || argument == "-filetype" || argument == "-file-type" {
 			if index+1 < len(Arguments) {
-				returnArray = append(returnArray, Arguments[index+1])
+				flagsArray = append(flagsArray, Arguments[index+1])
 			}
 		}
 
@@ -112,5 +111,5 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 		return []string{file}, []string{"Plain_File", findWord}
 	}
 
-	return fileNames, returnArray
+	return fileNames, flagsArray
 }

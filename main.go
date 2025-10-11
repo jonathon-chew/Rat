@@ -9,6 +9,7 @@ import (
 
 	aphrodite "github.com/jonathon-chew/Aphrodite"
 	"github.com/jonathon-chew/Rat/cmd"
+	plainFile "github.com/jonathon-chew/Rat/plain_file"
 )
 
 var FileType = map[string]string{"py": "python", "go": "golang", "ps1": "powershell", "json": "json", "js": "javascript"}
@@ -238,7 +239,7 @@ func main() {
 		if slices.Contains(supportedFileTypes, convertedFileType) || slices.Contains(flags, "Allow") {
 			PrintFile(fileName, convertedFileType)
 		} else if slices.Contains(flags, "Plain_File") {
-			plain_file(fileName, flags[1])
+			plainFile.Parse_plain_file(fileName, flags[1])
 		} else {
 			// Check the file name isn't in the flags - things like --allow or --file-type
 			if !slices.Contains(flags, fileName) {
