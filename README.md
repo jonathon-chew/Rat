@@ -1,4 +1,4 @@
-# 🐀 Rat (Go)
+# Rat (Go)
 <p align="center">
 <img width="400" src="doc/images/Rat.png" alt="Rat" title="Rat" />
 </p>
