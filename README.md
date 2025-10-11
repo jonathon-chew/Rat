@@ -1,4 +1,8 @@
 # 🐀 Rat (Go)
+<p align="center">
+<img width="400" src="doc/images/Rat.png" alt="Rat" title="Rat" />
+</p>
+
 
 I couldn't get BAT to work for me - so I'm creating my own simplified version as a go binary
 
