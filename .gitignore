@@ -6,4 +6,6 @@ Archive/
 *.py
 Rat
 Examples
-tests/*
+tests/
+
+nomos_rules.json

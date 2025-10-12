@@ -1,0 +1,52 @@
+package plainFile
+
+import (
+	"fmt"
+	"os"
+
+	aphrodite "github.com/jonathon-chew/Aphrodite"
+)
+
+func Parse_plain_file(file, findWord string) {
+
+	fileBytes, err := os.ReadFile(file)
+	if err != nil {
+		aphrodite.PrintError(fmt.Sprintf("Error reading file: %v", err))
+		return
+	}
+
+	var currentWord []byte
+	for i := 0; i < len(fileBytes); i++ {
+		b := fileBytes[i]
+
+		if b != ' ' && b != '\n' && b != '\t' {
+			currentWord = append(currentWord, b)
+			continue
+		}
+
+		word := string(currentWord)
+		if word == findWord {
+			if i+1 < len(fileBytes) {
+				aphrodite.PrintBold("Green", word+string(fileBytes[i]))
+			} else {
+				aphrodite.PrintBold("Green", word)
+			}
+		} else if len(currentWord) > 0 {
+			if i+1 < len(fileBytes) {
+				fmt.Print(word, string(fileBytes[i]))
+			} else {
+				fmt.Print(word)
+			}
+		}
+		currentWord = currentWord[:0] // reset
+	}
+
+	// Handle case where file doesn’t end with whitespace
+	if len(currentWord) > 0 {
+		if string(currentWord) == findWord {
+			aphrodite.PrintBold("Green", string(currentWord))
+		} else {
+			fmt.Print(string(currentWord))
+		}
+	}
+}
