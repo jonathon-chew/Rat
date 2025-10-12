@@ -105,6 +105,11 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 			findWord = Arguments[index+1]
 			index++
 		}
+
+		if argument == "--version" || argument == "-v" {
+			versionNumber := "0.0.1"
+			aphrodite.PrintInfo(fmt.Sprintf("Version Number is: %s\n", versionNumber))
+		}
 	}
 
 	if findWord != "" && file != "" {
