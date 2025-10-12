@@ -6,3 +6,4 @@ Archive/
 *.py
 Rat
 Examples
+tests/*
