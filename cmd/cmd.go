@@ -112,7 +112,7 @@ func ParseArguments(Arguments []string) ([]string, []string, Settings) {
 		}
 
 		if argument == "--version" || argument == "-v" {
-			versionNumber := "0.0.1"
+			versionNumber := "0.0.2"
 			aphrodite.PrintInfo(fmt.Sprintf("Version Number is: %s\n", versionNumber))
 		}
 	}
