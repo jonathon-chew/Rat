@@ -8,9 +8,14 @@ import (
 	aphrodite "github.com/jonathon-chew/Aphrodite"
 )
 
-func ParseArguments(Arguments []string) ([]string, []string) {
+type Settings struct {
+	Caseinsensative bool
+}
+
+func ParseArguments(Arguments []string) ([]string, []string, Settings) {
 	var fileNames, flagsArray []string
 	var file, findWord string
+	var new_settings Settings
 
 	for index := 0; index < len(Arguments); index++ {
 		argument := strings.ToLower(Arguments[index])
@@ -49,10 +54,6 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 		// Flag section
 		//------------
 		if argument == "--help" || argument == "-help" {
-			// aphrodite.PrintColour("Green", "Pass in at least one file\n")
-			// aphrodite.PrintColour("Green", "You can use the flag allow of force to force it for unknown / unsupported file types\n")
-			// aphrodite.PrintColour("Green", "You can use --file-type to dictate the file type!\n")
-			// aphrodite.PrintColour("Green", "You can use the file type flag to choose the type of colour coding - eg comment / variable declaration \n")
 			aphrodite.PrintBold("Purple", "Arguments:\n")
 			aphrodite.PrintBold("Cyan", "*\n")
 			aphrodite.PrintInfo("This can be used to do this on all files in the current directory, or all files of a certain type ie *.py would be all python files, it will only print on supported files unless the force flag is also used\n\n")
@@ -67,7 +68,7 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 			aphrodite.PrintBold("Cyan", "--word\n")
 			aphrodite.PrintInfo("You use this in conjunction with the file flag to denote which word in the file you are looking for\n\n")
 
-			return []string{}, []string{"help_menu"}
+			return []string{}, []string{"help_menu"}, new_settings
 		}
 
 		if argument == "--allow" || argument == "--force" || argument == "-allow" || argument == "-force" {
@@ -85,13 +86,13 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 
 		if argument == "--file" || argument == "-f" {
 			if index+1 >= len(Arguments) {
-				aphrodite.PrintError("Missing filename after --file")
-				return []string{}, []string{}
+				aphrodite.PrintError("Missing filename after --file\n")
+				return []string{}, []string{}, new_settings
 			}
 			next := Arguments[index+1]
 			if _, err := os.Stat(next); err != nil {
-				aphrodite.PrintError(fmt.Sprintf("File not found or inaccessible: %s", next))
-				return []string{}, []string{}
+				aphrodite.PrintError(fmt.Sprintf("File not found or inaccessible: %s\n", next))
+				return []string{}, []string{}, new_settings
 			}
 			file = next
 			index++
@@ -99,11 +100,15 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 
 		if argument == "--word" || argument == "-w" {
 			if index+1 >= len(Arguments) {
-				aphrodite.PrintError("Missing word after --word")
-				return []string{}, []string{}
+				aphrodite.PrintError("Missing word after --word\n")
+				return []string{}, []string{}, new_settings
 			}
 			findWord = Arguments[index+1]
 			index++
+		}
+
+		if argument == "--case-insensative" || argument == "-caseinsensative" || argument == "-cs" {
+			new_settings.Caseinsensative = true
 		}
 
 		if argument == "--version" || argument == "-v" {
@@ -113,8 +118,8 @@ func ParseArguments(Arguments []string) ([]string, []string) {
 	}
 
 	if findWord != "" && file != "" {
-		return []string{file}, []string{"Plain_File", findWord}
+		return []string{file}, []string{"Plain_File", findWord}, new_settings
 	}
 
-	return fileNames, flagsArray
+	return fileNames, flagsArray, new_settings
 }

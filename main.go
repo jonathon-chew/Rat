@@ -207,7 +207,7 @@ func main() {
 		return
 	}
 
-	fileNames, flags := cmd.ParseArguments(os.Args[1:])
+	fileNames, flags, settings := cmd.ParseArguments(os.Args[1:])
 
 	// (#4) TODO: Add more language suuport
 
@@ -239,7 +239,7 @@ func main() {
 		if slices.Contains(supportedFileTypes, convertedFileType) || slices.Contains(flags, "Allow") {
 			PrintFile(fileName, convertedFileType)
 		} else if slices.Contains(flags, "Plain_File") {
-			plainFile.Parse_plain_file(fileName, flags[1])
+			plainFile.Parse_plain_file(fileName, flags[1], settings)
 		} else {
 			// Check the file name isn't in the flags - things like --allow or --file-type
 			if !slices.Contains(flags, fileName) {

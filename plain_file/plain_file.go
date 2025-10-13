@@ -3,15 +3,17 @@ package plainFile
 import (
 	"fmt"
 	"os"
+	"strings"
 
 	aphrodite "github.com/jonathon-chew/Aphrodite"
+	"github.com/jonathon-chew/Rat/cmd"
 )
 
-func Parse_plain_file(file, findWord string) {
+func Parse_plain_file(file, findWord string, settings cmd.Settings) {
 
 	fileBytes, err := os.ReadFile(file)
 	if err != nil {
-		aphrodite.PrintError(fmt.Sprintf("Error reading file: %v", err))
+		aphrodite.PrintError(fmt.Sprintf("Error reading file: %v\n", err))
 		return
 	}
 
@@ -24,12 +26,17 @@ func Parse_plain_file(file, findWord string) {
 			continue
 		}
 
-		word := string(currentWord)
+		origionalWord := string(currentWord)
+		var word string
+		if settings.Caseinsensative {
+			word = strings.ToLower(origionalWord)
+		}
+
 		if word == findWord {
 			if i+1 < len(fileBytes) {
-				aphrodite.PrintBold("Green", word+string(fileBytes[i]))
+				aphrodite.PrintBold("Green", origionalWord+string(fileBytes[i]))
 			} else {
-				aphrodite.PrintBold("Green", word)
+				aphrodite.PrintBold("Green", origionalWord)
 			}
 		} else if len(currentWord) > 0 {
 			if i+1 < len(fileBytes) {
