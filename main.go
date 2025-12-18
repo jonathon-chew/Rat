@@ -234,7 +234,7 @@ func main() {
 			}
 		}
 
-		var supportedFileTypes = []string{"python", "powershell", "json", "javascript"}
+		var supportedFileTypes = []string{"python", "powershell", "json", "javascript", "go"}
 
 		if slices.Contains(supportedFileTypes, convertedFileType) || slices.Contains(flags, "Allow") {
 			PrintFile(fileName, convertedFileType)
