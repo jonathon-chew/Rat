@@ -9,8 +9,6 @@ I couldn't get BAT to work for me - so I'm creating my own simplified version as
 ## 🚀 Features
 
 - Colourful print out of a text file
-- Syntax highlighting support for Python, JavaScript, Go, PowerShell, and JSON
-- Optimized performance with buffered output for faster processing of large files 
 
 ## 🛠️ Prerequisites
 

@@ -331,11 +331,7 @@ func main() {
 
 	fileNames, flags, settings := cmd.ParseArguments(os.Args[1:])
 
-	// (#4) TODO: Add more language suuport
-
 	// (#5) TODO: JSON can use a lot of what python can BUT the test example
-
-	// (#7) TODO: Look at whether to return instead of print, and print at the end for speed? Look at is printing including escape for every chr and slowing it down as well!
 
 	if len(flags) == 1 && flags[0] == "help_menu" {
 		return // as to not return a error when the help menu has been selected
