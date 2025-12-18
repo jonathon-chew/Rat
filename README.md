@@ -8,7 +8,9 @@ I couldn't get BAT to work for me - so I'm creating my own simplified version as
 
 ## 🚀 Features
 
-- Colourful print out of a text file 
+- Colourful print out of a text file
+- Syntax highlighting support for Python, JavaScript, Go, PowerShell, and JSON
+- Optimized performance with buffered output for faster processing of large files 
 
 ## 🛠️ Prerequisites
 
@@ -35,6 +37,17 @@ Pass in any number of files and the output will pretty print the file
 
 This is currently a work in progress with a few inovations planned for the future.
 Issues will be tracked in Github issues.
+
+### Supported Languages
+
+Rat currently supports syntax highlighting for:
+- **Python** (.py) - Keywords, comments, strings, and numbers
+- **JavaScript** (.js) - Keywords, comments, strings, and numbers
+- **Go** (.go) - Keywords, comments, strings, and numbers
+- **PowerShell** (.ps1) - Keywords, comments, strings, variables, and numbers
+- **JSON** (.json) - Basic structure highlighting
+
+Performance improvements have been implemented to handle large files efficiently through buffered output and optimized token scanning.
 
 ## 📜 License
 
