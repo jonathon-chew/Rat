@@ -4,6 +4,8 @@ Archive/
 *.json
 *.ps1
 *.py
+*.pprof
+*.test
 Rat
 Examples
 tests/

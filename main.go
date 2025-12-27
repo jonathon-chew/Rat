@@ -15,11 +15,13 @@ import (
 var FileType = map[string]string{"py": "python", "go": "golang", "ps1": "powershell", "json": "json", "js": "javascript"}
 
 // Token slices sorted by length (longest first) to avoid partial matches
-var PythonRestrictedTokens = []string{"else:", "elif ", "match ", "assert ", "return ", "while ", "with ", "True", "False", "def ", "if ", "for ", "try", "in ", "is ", " or ", " and ", " == ", " as ", " = ", "case", ":", "{", "}", "[", "]", "(", ")"}
+var PythonRestrictedTokens = []string{"else:", "elif ", "match ", "assert ", "return ", "while ", "with ", "True", "False", "def ", "if ", "for ", "try", "in ", "is ", " or ", " and ", " == ", " as ", " = ", "case", ":", "{", "}", "[", "]", "(", ")", "import ", "from "}
 
-var JavascriptRestrictedTokens = []string{"const ", "var ", "let ", "new ", "&&", "||"}
+var JavascriptRestrictedTokens = []string{"const ", "var ", "let ", "new ", "&&", "||", "null "}
 
 var GolangRestrictedTokens = []string{"package ", "import ", "interface ", "default ", "return ", "struct ", "range ", "switch ", "defer ", "select ", "func ", "else ", "case ", "type ", "var ", "const ", "if ", "for ", "go ", "chan ", "map", "make", "len", "cap", "new", "nil", "true", "false", ":=", "==", "!=", "<=", ">=", "&&", "||", "{", "}", "[", "]", "(", ")"}
+
+var supportedFileTypes = []string{"python", "powershell", "json", "javascript", "golang"}
 
 // Pre-compiled regex for possessive comma detection (optimization #2)
 var possessiveCommaRegex = regexp.MustCompile(`[a-zA-Z]'[a-zA-Z]`)
@@ -38,8 +40,18 @@ func makeTokenBytes(tokens []string) [][]byte {
 	return result
 }
 
-func notPossessiveComma(checkBytes string) bool {
-	return possessiveCommaRegex.MatchString(checkBytes)
+func notPossessiveComma(checkBytes []byte, fileExtension string) bool {
+	// fmt.Printf("I've been passed: %s\n", checkBytes)
+	if fileExtension != "python" {
+		return possessiveCommaRegex.Match(checkBytes)
+	}
+
+	if fileExtension == "python" && checkBytes[0] == 'f' {
+		// fmt.Println("I'm an f string")
+		return false
+	}
+
+	return possessiveCommaRegex.Match(checkBytes)
 }
 
 // flushBuffer outputs buffered content with the specified color
@@ -272,11 +284,10 @@ func PrintFile(fileName, fileExtension string) {
 		if !found && fileBytes[i] == '\'' {
 			// Check if it's a possessive comma (like "can't")
 			isPossessive := false
-			if i > 0 && i+1 < len(fileBytes) {
-				checkStr := string(fileBytes[i-1 : i+2])
-				if len(checkStr) >= 2 {
-					isPossessive = notPossessiveComma(checkStr)
-				}
+			end := findStringEnd(fileBytes, i-1, '\'')
+			checkStr := fileBytes[i:end]
+			if len(checkStr) >= 2 {
+				isPossessive = notPossessiveComma(checkStr, fileExtension)
 			}
 
 			if !isPossessive {
@@ -344,7 +355,7 @@ func main() {
 
 	for _, fileName := range fileNames {
 		fileExtension := strings.Split(fileName, ".")
-		// Handle files without extensions (improvement #7)
+		// Handle files without extensions
 		var convertedFileType string
 		if len(fileExtension) > 1 {
 			convertedFileType = FileType[fileExtension[len(fileExtension)-1]]
@@ -357,8 +368,6 @@ func main() {
 				convertedFileType = extension
 			}
 		}
-
-		var supportedFileTypes = []string{"python", "powershell", "json", "javascript", "golang"}
 
 		if slices.Contains(supportedFileTypes, convertedFileType) || slices.Contains(flags, "Allow") {
 			PrintFile(fileName, convertedFileType)
