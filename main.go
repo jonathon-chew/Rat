@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"os"
 	"regexp"
 	"slices"
@@ -169,12 +168,12 @@ func handleTripleQuotedString(fileBytes []byte, i int, quote byte) (int, bool) {
 
 func PrintFile(fileName, fileExtension string) {
 	// Print relevant sections with relevant colouring
-	aphrodite.PrintColour("Green", fmt.Sprintf("\nRead the file %s\n", fileName))
+	aphrodite.PrintColour("Green", "\nRead the file "+fileName+"\n")
 
 	// Read file
 	fileBytes, err := os.ReadFile(fileName)
 	if err != nil {
-		aphrodite.PrintColour("Red", fmt.Sprintf("Issue reading the file %s\n", err))
+		aphrodite.PrintColour("Red", "Issue reading the file "+err.Error()+"\n")
 		return
 	}
 
@@ -380,7 +379,7 @@ func main() {
 				if len(fileExtension) > 1 {
 					ext = fileExtension[len(fileExtension)-1]
 				}
-				aphrodite.PrintColour("Red", fmt.Sprintf("\n[ERROR]: File extension %s is not yet supported\n", ext))
+				aphrodite.PrintColour("Red", "\n[ERROR]: File extension "+ext+" is not yet supported\n")
 			}
 		}
 	}
