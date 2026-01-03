@@ -11,6 +11,7 @@ import (
 	plainFile "github.com/jonathon-chew/Rat/plain_file"
 )
 
+/* A list of the file types that are supported */
 var FileType = map[string]string{"py": "python", "go": "golang", "ps1": "powershell", "json": "json", "js": "javascript"}
 
 // Token slices sorted by length (longest first) to avoid partial matches
@@ -18,7 +19,7 @@ var PythonRestrictedTokens = []string{"else:", "elif ", "match ", "assert ", "re
 
 var JavascriptRestrictedTokens = []string{"const ", "var ", "let ", "new ", "&&", "||", "null "}
 
-var GolangRestrictedTokens = []string{"package ", "import ", "interface ", "default ", "return ", "struct ", "range ", "switch ", "defer ", "select ", "func ", "else ", "case ", "type ", "var ", "const ", "if ", "for ", "go ", "chan ", "map", "make", "len", "cap", "new", "nil", "true", "false", ":=", "==", "!=", "<=", ">=", "&&", "||", "{", "}", "[", "]", "(", ")"}
+var GolangRestrictedTokens = []string{"package ", "import ", "interface ", "default ", "return ", "struct ", "range ", "switch ", "defer ", "select ", "func ", "else ", "case ", "type ", "var ", "const ", "if ", "for ", "go ", "chan ", "map", "make", "len", "cap", "new ", "nil ", "true ", "false ", ":=", "==", "!=", "<=", ">=", "&&", "||", "{", "}", "[", "]", "(", ")"}
 
 var supportedFileTypes = []string{"python", "powershell", "json", "javascript", "golang"}
 
@@ -39,6 +40,7 @@ func makeTokenBytes(tokens []string) [][]byte {
 	return result
 }
 
+// Check if the comma is possessive, as is it is, don't consider it the end of the quote blockc
 func notPossessiveComma(checkBytes []byte, fileExtension string) bool {
 	// fmt.Printf("I've been passed: %s\n", checkBytes)
 	if fileExtension != "python" {
@@ -66,14 +68,8 @@ func findTokenMatch(fileBytes []byte, i int, tokens [][]byte) (int, []byte, bool
 		tokenLen := len(tokenBytes)
 		if i+tokenLen <= len(fileBytes) {
 			// Fast byte comparison
-			match := true
-			for j := 0; j < tokenLen; j++ {
-				if fileBytes[i+j] != tokenBytes[j] {
-					match = false
-					break
-				}
-			}
-			if match {
+			match := slices.Compare(fileBytes, tokenBytes)
+			if match == 0 {
 				return tokenLen, tokenBytes, true
 			}
 		}
@@ -166,6 +162,7 @@ func handleTripleQuotedString(fileBytes []byte, i int, quote byte) (int, bool) {
 	return i, false
 }
 
+// The main logic - parsing the file according to the tokens
 func PrintFile(fileName, fileExtension string) {
 	// Print relevant sections with relevant colouring
 	aphrodite.PrintColour("Green", "\nRead the file "+fileName+"\n")
@@ -335,7 +332,7 @@ func PrintFile(fileName, fileExtension string) {
 func main() {
 
 	if len(os.Args) == 1 {
-		aphrodite.PrintColour("Red", "[ERROR]: Not enough arguments provided\n")
+		aphrodite.PrintWarning("[ERROR]: Not enough arguments provided\n")
 		return
 	}
 
@@ -348,7 +345,7 @@ func main() {
 	}
 
 	if len(fileNames) == 0 {
-		aphrodite.PrintColour("Red", "[ERROR]: No file could be detected\n")
+		aphrodite.PrintWarning("[ERROR]: No file could be detected\n")
 		return
 	}
 
@@ -379,7 +376,7 @@ func main() {
 				if len(fileExtension) > 1 {
 					ext = fileExtension[len(fileExtension)-1]
 				}
-				aphrodite.PrintColour("Red", "\n[ERROR]: File extension "+ext+" is not yet supported\n")
+				aphrodite.PrintWarning("\n[ERROR]: File extension " + ext + " is not yet supported\n")
 			}
 		}
 	}

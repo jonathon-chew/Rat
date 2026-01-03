@@ -4,4 +4,4 @@ go 1.24.2
 
 toolchain go1.24.4
 
-require github.com/jonathon-chew/Aphrodite v1.3.36
+require github.com/jonathon-chew/Aphrodite v1.4.0

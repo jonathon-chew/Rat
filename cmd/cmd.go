@@ -91,7 +91,7 @@ func ParseArguments(Arguments []string) ([]string, []string, Settings) {
 			}
 			next := Arguments[index+1]
 			if _, err := os.Stat(next); err != nil {
-				aphrodite.PrintError(fmt.Sprintf("File not found or inaccessible: %s\n", next))
+				aphrodite.PrintError("File not found or inaccessible:" + next + "\n")
 				return []string{}, []string{}, new_settings
 			}
 			file = next
@@ -112,8 +112,8 @@ func ParseArguments(Arguments []string) ([]string, []string, Settings) {
 		}
 
 		if argument == "--version" || argument == "-v" {
-			versionNumber := "v0.1.3"
-			aphrodite.PrintInfo(fmt.Sprintf("Version Number is: %s\n", versionNumber))
+			versionNumber := "v0.1.4"
+			aphrodite.PrintInfo("Version Number is: " + versionNumber + "\n")
 		}
 	}
 

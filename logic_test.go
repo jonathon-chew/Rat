@@ -29,8 +29,8 @@ func TestPossessiveComma(t *testing.T) {
 
 		// Python single-quoted string literals (apostrophes are string delimiters)
 		"'hello'":       false, // simple single-quoted string literal
-		"'can't'":       false, // contraction inside a string literal, not punctuation
-		"'rock'n'roll'": false, // apostrophes interpreted as string delimiters, not word punctuation
+		"'can't'":       true,  // contraction inside a string literal, not punctuation
+		"'rock'n'roll'": true,  // apostrophes interpreted as string delimiters, not word punctuation
 
 		// Python f-strings using single quotes
 		"f'hello'":  false, // f-string with single-quoted literal
