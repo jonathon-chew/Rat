@@ -1,6 +1,8 @@
 package main
 
 import (
+	"io"
+	"log"
 	"os"
 	"regexp"
 	"slices"
@@ -168,165 +170,180 @@ func PrintFile(fileName, fileExtension string) {
 	aphrodite.PrintColour("Green", "\nRead the file "+fileName+"\n")
 
 	// Read file
-	fileBytes, err := os.ReadFile(fileName)
+	fileBytes, err := os.Open(fileName)
 	if err != nil {
 		aphrodite.PrintColour("Red", "Issue reading the file "+err.Error()+"\n")
 		return
 	}
-
-	if len(fileBytes) == 0 {
-		return
-	}
+	/*
+		if len(fileBytes) == 0 {
+			return
+		} */
 
 	// Buffering for performance: accumulate characters of the same color
-	var currentBuffer []byte
+	var currentBuffer = make([]byte, 32*1024)
 	currentColor := "White"
 
-	// Helper function to change color and flush buffer
-	changeColor := func(newColor string, newContent []byte) {
-		if newColor != currentColor {
+	for {
+
+		n, err := fileBytes.Read(currentBuffer)
+
+		if n > 0 {
+			// Helper function to change color and flush buffer
+			changeColor := func(newColor string, newContent []byte) {
+				if newColor != currentColor {
+					flushBuffer(currentBuffer, currentColor)
+					currentBuffer = currentBuffer[:0]
+					currentColor = newColor
+				}
+				currentBuffer = append(currentBuffer, newContent...)
+			}
+
+			// Determine which tokens to check based on file extension (optimization #4)
+			var tokensToCheck [][]byte
+			var tokenColor string
+			switch fileExtension {
+			case "python":
+				tokensToCheck = pythonTokenBytes
+				tokenColor = "Green"
+			case "javascript":
+				tokensToCheck = javascriptTokenBytes
+				tokenColor = "Blue"
+			case "golang":
+				tokensToCheck = golangTokenBytes
+				tokenColor = "Blue"
+			default:
+				tokensToCheck = nil
+			}
+
+			// Parse file
+			for i := 0; i < len(currentBuffer); i++ {
+				found := false
+
+				// Check language-specific tokens (optimization #4)
+				if tokensToCheck != nil {
+					if tokenLen, tokenBytes, matched := findTokenMatch(currentBuffer, i, tokensToCheck); matched {
+						changeColor(tokenColor, tokenBytes)
+						i += tokenLen - 1
+						found = true
+					}
+				}
+
+				// Handle block comments /* */ for golang/javascript (improvement #1)
+				if !found && (fileExtension == "golang" || fileExtension == "javascript") {
+					if end, ok := handleBlockComment(currentBuffer, i); ok {
+						changeColor("Yellow", currentBuffer[i:end])
+						i = end - 1
+						found = true
+					}
+				}
+
+				// Handle line comments: # for python/powershell
+				if !found && currentBuffer[i] == '#' && (fileExtension == "python" || fileExtension == "powershell") {
+					if end, ok := handleLineComment(currentBuffer, i, '#'); ok {
+						changeColor("Yellow", currentBuffer[i:end])
+						i = end - 1
+						found = true
+					}
+				}
+
+				// Handle line comments: // for golang/javascript
+				if !found && (fileExtension == "golang" || fileExtension == "javascript") {
+					if end, ok := handleLineComment(currentBuffer, i, '/'); ok {
+						changeColor("Yellow", currentBuffer[i:end])
+						i = end - 1
+						found = true
+					}
+				}
+
+				// Handle Python triple-quoted strings (improvement #10)
+				if !found && fileExtension == "python" {
+					if end, ok := handleTripleQuotedString(currentBuffer, i, '"'); ok {
+						changeColor("Yellow", currentBuffer[i:end])
+						i = end - 1
+						found = true
+					} else if end, ok := handleTripleQuotedString(currentBuffer, i, '\''); ok {
+						changeColor("Yellow", currentBuffer[i:end])
+						i = end - 1
+						found = true
+					}
+				}
+
+				// Handle Go raw strings (backticks) (improvement #6)
+				if !found && fileExtension == "golang" && currentBuffer[i] == '`' {
+					end := i + 1
+					for end < len(currentBuffer) && currentBuffer[end] != '`' {
+						end++
+					}
+					if end < len(currentBuffer) {
+						end++
+					}
+					changeColor("Yellow", currentBuffer[i:end])
+					i = end - 1
+					found = true
+				}
+
+				// Handle single quotes with improved escape handling (improvement #5)
+				if !found && currentBuffer[i] == '\'' {
+					// Check if it's a possessive comma (like "can't")
+					isPossessive := false
+					end := findStringEnd(currentBuffer, i-1, '\'')
+					checkStr := currentBuffer[i:end]
+					if len(checkStr) >= 2 {
+						isPossessive = notPossessiveComma(checkStr, fileExtension)
+					}
+
+					if !isPossessive {
+						end := findStringEnd(currentBuffer, i, '\'')
+						changeColor("Yellow", currentBuffer[i:end])
+						i = end - 1
+						found = true
+					}
+				}
+
+				// Handle double quotes with improved escape handling (improvement #5)
+				if !found && currentBuffer[i] == '"' && (i == 0 || currentBuffer[i-1] != '\\') {
+					end := findStringEnd(currentBuffer, i, '"')
+					changeColor("Yellow", currentBuffer[i:end])
+					i = end - 1
+					found = true
+				}
+
+				// Handle PowerShell/PHP variables
+				if !found && (fileExtension == "powershell" || fileExtension == "php") && currentBuffer[i] == '$' {
+					nextSpaceChr := i + 1
+					for nextSpaceChr < len(currentBuffer) && currentBuffer[nextSpaceChr] != ' ' && currentBuffer[nextSpaceChr] != '=' && currentBuffer[nextSpaceChr] != '.' && currentBuffer[nextSpaceChr] != '(' {
+						nextSpaceChr++
+					}
+					changeColor("Blue", currentBuffer[i:nextSpaceChr])
+					i = nextSpaceChr - 1
+					found = true
+				}
+
+				// Handle digits (optimized: no regex, simple byte comparison)
+				if !found && currentBuffer[i] >= '0' && currentBuffer[i] <= '9' {
+					changeColor("Red", []byte{currentBuffer[i]})
+					found = true
+				}
+
+				// Default: white text
+				if !found {
+					changeColor("White", []byte{currentBuffer[i]})
+				}
+			}
+
+			// Flush any remaining buffered content
 			flushBuffer(currentBuffer, currentColor)
-			currentBuffer = currentBuffer[:0]
-			currentColor = newColor
-		}
-		currentBuffer = append(currentBuffer, newContent...)
-	}
-
-	// Determine which tokens to check based on file extension (optimization #4)
-	var tokensToCheck [][]byte
-	var tokenColor string
-	switch fileExtension {
-	case "python":
-		tokensToCheck = pythonTokenBytes
-		tokenColor = "Green"
-	case "javascript":
-		tokensToCheck = javascriptTokenBytes
-		tokenColor = "Blue"
-	case "golang":
-		tokensToCheck = golangTokenBytes
-		tokenColor = "Blue"
-	default:
-		tokensToCheck = nil
-	}
-
-	// Parse file
-	for i := 0; i < len(fileBytes); i++ {
-		found := false
-
-		// Check language-specific tokens (optimization #4)
-		if tokensToCheck != nil {
-			if tokenLen, tokenBytes, matched := findTokenMatch(fileBytes, i, tokensToCheck); matched {
-				changeColor(tokenColor, tokenBytes)
-				i += tokenLen - 1
-				found = true
-			}
 		}
 
-		// Handle block comments /* */ for golang/javascript (improvement #1)
-		if !found && (fileExtension == "golang" || fileExtension == "javascript") {
-			if end, ok := handleBlockComment(fileBytes, i); ok {
-				changeColor("Yellow", fileBytes[i:end])
-				i = end - 1
-				found = true
-			}
+		if err == io.EOF {
+			break
 		}
 
-		// Handle line comments: # for python/powershell
-		if !found && fileBytes[i] == '#' && (fileExtension == "python" || fileExtension == "powershell") {
-			if end, ok := handleLineComment(fileBytes, i, '#'); ok {
-				changeColor("Yellow", fileBytes[i:end])
-				i = end - 1
-				found = true
-			}
-		}
-
-		// Handle line comments: // for golang/javascript
-		if !found && (fileExtension == "golang" || fileExtension == "javascript") {
-			if end, ok := handleLineComment(fileBytes, i, '/'); ok {
-				changeColor("Yellow", fileBytes[i:end])
-				i = end - 1
-				found = true
-			}
-		}
-
-		// Handle Python triple-quoted strings (improvement #10)
-		if !found && fileExtension == "python" {
-			if end, ok := handleTripleQuotedString(fileBytes, i, '"'); ok {
-				changeColor("Yellow", fileBytes[i:end])
-				i = end - 1
-				found = true
-			} else if end, ok := handleTripleQuotedString(fileBytes, i, '\''); ok {
-				changeColor("Yellow", fileBytes[i:end])
-				i = end - 1
-				found = true
-			}
-		}
-
-		// Handle Go raw strings (backticks) (improvement #6)
-		if !found && fileExtension == "golang" && fileBytes[i] == '`' {
-			end := i + 1
-			for end < len(fileBytes) && fileBytes[end] != '`' {
-				end++
-			}
-			if end < len(fileBytes) {
-				end++
-			}
-			changeColor("Yellow", fileBytes[i:end])
-			i = end - 1
-			found = true
-		}
-
-		// Handle single quotes with improved escape handling (improvement #5)
-		if !found && fileBytes[i] == '\'' {
-			// Check if it's a possessive comma (like "can't")
-			isPossessive := false
-			end := findStringEnd(fileBytes, i-1, '\'')
-			checkStr := fileBytes[i:end]
-			if len(checkStr) >= 2 {
-				isPossessive = notPossessiveComma(checkStr, fileExtension)
-			}
-
-			if !isPossessive {
-				end := findStringEnd(fileBytes, i, '\'')
-				changeColor("Yellow", fileBytes[i:end])
-				i = end - 1
-				found = true
-			}
-		}
-
-		// Handle double quotes with improved escape handling (improvement #5)
-		if !found && fileBytes[i] == '"' && (i == 0 || fileBytes[i-1] != '\\') {
-			end := findStringEnd(fileBytes, i, '"')
-			changeColor("Yellow", fileBytes[i:end])
-			i = end - 1
-			found = true
-		}
-
-		// Handle PowerShell/PHP variables
-		if !found && (fileExtension == "powershell" || fileExtension == "php") && fileBytes[i] == '$' {
-			nextSpaceChr := i + 1
-			for nextSpaceChr < len(fileBytes) && fileBytes[nextSpaceChr] != ' ' && fileBytes[nextSpaceChr] != '=' && fileBytes[nextSpaceChr] != '.' && fileBytes[nextSpaceChr] != '(' {
-				nextSpaceChr++
-			}
-			changeColor("Blue", fileBytes[i:nextSpaceChr])
-			i = nextSpaceChr - 1
-			found = true
-		}
-
-		// Handle digits (optimized: no regex, simple byte comparison)
-		if !found && fileBytes[i] >= '0' && fileBytes[i] <= '9' {
-			changeColor("Red", []byte{fileBytes[i]})
-			found = true
-		}
-
-		// Default: white text
-		if !found {
-			changeColor("White", []byte{fileBytes[i]})
+		if err != nil {
+			log.Fatal(err)
 		}
 	}
-
-	// Flush any remaining buffered content
-	flushBuffer(currentBuffer, currentColor)
 }
 
 func main() {
