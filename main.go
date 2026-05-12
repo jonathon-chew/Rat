@@ -8,6 +8,7 @@ import (
 
 	aphrodite "github.com/jonathon-chew/Aphrodite"
 	"github.com/jonathon-chew/Rat/cmd"
+	"github.com/jonathon-chew/Rat/internal"
 	plainFile "github.com/jonathon-chew/Rat/plain_file"
 )
 
@@ -359,6 +360,16 @@ func main() {
 
 	if len(fileNames) == 0 {
 		aphrodite.PrintWarning("[ERROR]: No file could be detected\n")
+		return
+	}
+
+	if fileNames[0] == "ping" {
+		internal.Ping(flags)
+		return
+	}
+
+	if fileNames[0] == "arp" {
+		internal.Arp(flags)
 		return
 	}
 

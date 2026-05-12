@@ -115,6 +115,28 @@ func ParseArguments(Arguments []string) ([]string, []string, Settings) {
 			versionNumber := "v0.1.4"
 			aphrodite.PrintInfo("Version Number is: " + versionNumber + "\n")
 		}
+
+		if argument == "ping" && index == 0 {
+			// return fileNames, flags, settings
+			var rest_of_commands []string
+			if len(Arguments) >= 1 {
+				rest_of_commands = Arguments[1:]
+			} else {
+				rest_of_commands = []string{}
+			}
+			return []string{"ping"}, rest_of_commands, Settings{Caseinsensative: false}
+		}
+
+		if argument == "arp" && index == 0 {
+			// return fileNames, flags, settings
+			var rest_of_commands []string
+			if len(Arguments) >= 1 {
+				rest_of_commands = Arguments[1:]
+			} else {
+				rest_of_commands = []string{}
+			}
+			return []string{"arp"}, rest_of_commands, Settings{Caseinsensative: false}
+		}
 	}
 
 	if findWord != "" && file != "" {
