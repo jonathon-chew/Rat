@@ -373,6 +373,11 @@ func main() {
 		return
 	}
 
+	if fileNames[0] == "traceroute" {
+		internal.TraceRoute(flags)
+		return
+	}
+
 	for _, fileName := range fileNames {
 		fileExtension := strings.Split(fileName, ".")
 		// Handle files without extensions
