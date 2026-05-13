@@ -2,7 +2,6 @@ package internal
 
 import (
 	"bufio"
-	"bytes"
 	"fmt"
 	"os/exec"
 	"regexp"
@@ -19,29 +18,74 @@ func Ping(rest_of_command []string) {
 
 	timeRegex := `time=([0-9]+(?:\.[0-9]+)?)\s*ms`
 	timeAddress := regexp.MustCompile(timeRegex)
+	_ = timeAddress
 
 	cmd := exec.Command("ping", rest_of_command...)
 
-	var stdout bytes.Buffer
-	var stderr bytes.Buffer
+	// var stdout bytes.Buffer
+	// var stderr bytes.Buffer
 
-	cmd.Stdout = &stdout
-	cmd.Stderr = &stderr
+	// cmd.Stdout = &stdout
+	// cmd.Stderr = &stderr
 
-	ErrRunningCommand := cmd.Run()
-	if ErrRunningCommand != nil {
-		aphrodite.PrintError("error running command: ping: " + ErrRunningCommand.Error() + "\n")
-		aphrodite.PrintError(stderr.String())
+	// ErrRunningCommand := cmd.Run()
+	// if ErrRunningCommand != nil {
+	// 	aphrodite.PrintError("error running command: ping: " + ErrRunningCommand.Error() + "\n")
+	// 	aphrodite.PrintError(stderr.String())
+	// 	return
+	// }
+
+	// if stderr.Len() > 0 {
+	// 	fmt.Print("error: from the command output: ", stderr.String())
+	// }
+
+	// scanner := bufio.NewScanner(os.Stdout)
+
+	// for scanner.Scan() {
+	// 	line := scanner.Text()
+
+	// 	// Replace every IP match with colored version
+	// 	coloredLine := ipAddress.ReplaceAllStringFunc(line, func(ip string) string {
+	// 		return aphrodite.ReturnInfo(ip)
+	// 	})
+
+	// 	match := timeAddress.FindStringSubmatch(coloredLine)
+	// 	if len(match) > 1 {
+	// 		timeValue := match[1]
+
+	// 		number_of_seconds, _ := strconv.Atoi(strings.Split(timeValue, ".")[0])
+
+	// 		var colored string
+	// 		switch {
+	// 		case number_of_seconds > 25:
+	// 			colored, _ = aphrodite.ReturnColour("red", timeValue)
+	// 		case number_of_seconds > 10:
+	// 			colored, _ = aphrodite.ReturnColour("yellow", timeValue)
+	// 		case number_of_seconds > 5:
+	// 			colored, _ = aphrodite.ReturnColour("green", timeValue)
+	// 		default:
+	// 			colored, _ = aphrodite.ReturnColour("blue", timeValue)
+	// 		}
+
+	// 		// replace ONLY the number inside the original string
+	// 		coloredLine = strings.Replace(coloredLine, timeValue, colored, 1)
+	// 	}
+
+	// 	fmt.Println(coloredLine)
+	// }
+
+	// if err := scanner.Err(); err != nil {
+	// 	aphrodite.PrintError(err.Error())
+	// }
+
+	stdoutPipe, err := cmd.StdoutPipe()
+	if err != nil {
+		aphrodite.PrintError(err.Error())
 		return
 	}
+	cmd.Start()
 
-	// cmd.Start()
-
-	if stderr.Len() > 0 {
-		fmt.Print("error: from the command output: ", stderr.String())
-	}
-
-	scanner := bufio.NewScanner(&stdout)
+	scanner := bufio.NewScanner(stdoutPipe)
 
 	for scanner.Scan() {
 		line := scanner.Text()
@@ -59,11 +103,11 @@ func Ping(rest_of_command []string) {
 
 			var colored string
 			switch {
-			case number_of_seconds > 25:
+			case number_of_seconds > 50:
 				colored, _ = aphrodite.ReturnColour("red", timeValue)
-			case number_of_seconds > 10:
+			case number_of_seconds > 25:
 				colored, _ = aphrodite.ReturnColour("yellow", timeValue)
-			case number_of_seconds > 5:
+			case number_of_seconds > 0:
 				colored, _ = aphrodite.ReturnColour("green", timeValue)
 			default:
 				colored, _ = aphrodite.ReturnColour("blue", timeValue)
@@ -76,7 +120,5 @@ func Ping(rest_of_command []string) {
 		fmt.Println(coloredLine)
 	}
 
-	if err := scanner.Err(); err != nil {
-		aphrodite.PrintError(err.Error())
-	}
+	cmd.Wait()
 }
