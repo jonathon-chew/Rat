@@ -92,7 +92,8 @@ func Ping(rest_of_command []string) {
 
 		// Replace every IP match with colored version
 		coloredLine := ipAddress.ReplaceAllStringFunc(line, func(ip string) string {
-			return aphrodite.ReturnInfo(ip)
+			returnMe, _ := aphrodite.ReturnColour("cyan", ip)
+			return returnMe
 		})
 
 		match := timeAddress.FindStringSubmatch(coloredLine)

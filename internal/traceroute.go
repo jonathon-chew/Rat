@@ -46,11 +46,12 @@ func TraceRoute(rest_of_command []string) {
 
 		// Replace every IP match with colored version
 		coloredLine := ipAddress.ReplaceAllStringFunc(line, func(ip string) string {
-			return aphrodite.ReturnInfo(ip)
+			returnMe, _ := aphrodite.ReturnColour("Cyan", ip)
+			return returnMe
 		})
 
 		matches := timeAddress.FindAll([]byte(coloredLine), -1)
-		if len(matches) > 1 {
+		if len(matches) >= 1 {
 			for _, timeValue := range matches {
 
 				timeValue := strings.ReplaceAll(string(timeValue), "ms", "")
@@ -72,7 +73,6 @@ func TraceRoute(rest_of_command []string) {
 				coloredLine = strings.Replace(coloredLine, timeValue, colored, 1)
 			}
 		}
-
 		fmt.Println(coloredLine)
 	}
 
