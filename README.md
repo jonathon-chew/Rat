@@ -4,15 +4,15 @@
 </p>
 
 
-I couldn't get BAT to work for me - so I'm creating my own simplified version as a go binary
+`Rat` is a simplified `bat`-style viewer built as a Go binary.
 
 ## 🚀 Features
 
-- Colourful print out of a text file
+- Colourful output for text files
 
 ## 🛠️ Prerequisites
 
-- [Go] To compile the code to a binary
+- [Go](https://golang.org/dl/) installed to compile the code
 
 ## 📁 Setup
 
@@ -20,21 +20,23 @@ I couldn't get BAT to work for me - so I'm creating my own simplified version as
 
    ```bash
    git clone https://github.com/jonathon-chew/Rat.git
-   cd Rat 
+   cd Rat
    ```
 
 2. Compile the binary:
 
-    `go build .`
+   ```bash
+   go build .
+   ```
 
 ## 📂 Output
 
-Pass in any number of files and the output will pretty print the file
+Pass in one or more files and the output will pretty-print them.
 
 ## 🧠 Notes
 
-This is currently a work in progress with a few inovations planned for the future.
-Issues will be tracked in Github issues.
+This is currently a work in progress with a few improvements planned for the future.
+Issues will be tracked in GitHub Issues.
 
 ### Supported Languages
 
@@ -45,7 +47,7 @@ Rat currently supports syntax highlighting for:
 - **PowerShell** (.ps1) - Keywords, comments, strings, variables, and numbers
 - **JSON** (.json) - Basic structure highlighting
 
-Performance improvements have been implemented to handle large files efficiently through buffered output and optimized token scanning.
+Performance improvements help the tool handle large files efficiently through buffered output and optimized token scanning.
 
 ## 📜 License
 
