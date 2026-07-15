@@ -45,9 +45,9 @@ func ParseArguments(Arguments []string) ([]string, []string, Settings) {
 			}
 		}
 
-		_, err := os.Stat(argument)
+		_, err := os.Stat(Arguments[index])
 		if err == nil {
-			fileNames = append(fileNames, argument)
+			fileNames = append(fileNames, Arguments[index])
 		}
 
 		// -----------
