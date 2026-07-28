@@ -3,12 +3,13 @@
 <img width="400" src="doc/images/Rat.png" alt="Rat" title="Rat" />
 </p>
 
+## Why Rat Exists
 
-`Rat` is a simplified `bat`-style viewer built as a Go binary.
+Rat is a small terminal file viewer built to explore how syntax highlighting, buffered output, and CLI ergonomics work under the hood.
 
-## 🚀 Features
+It is intentionally simpler than `bat`, but it solves the same everyday problem: quickly inspect source files in the terminal with readable colour and predictable output.
 
-- Colourful output for text files
+The project focuses on practical implementation details such as file handling, token scanning, language-specific highlighting rules, and keeping output fast enough for larger files.
 
 ## 🛠️ Prerequisites
 
@@ -28,17 +29,37 @@
    ```bash
    go build .
    ```
+    or
 
+   ```bash
+   go build -o $HOME/go/bin .
+   ```
+## Usage
+
+View a single file:
+
+    ```bash
+    Rat main.go
+    ```
+
+View multiple files:
+    ```bash
+    Rat main.go parser.go config.json
+    ```
+    or
+
+    ```bash
+    Rat *
+    ```
 ## 📂 Output
 
 Pass in one or more files and the output will pretty-print them.
 
-## 🧠 Notes
+## Current Status
 
-This is currently a work in progress with a few improvements planned for the future.
-Issues will be tracked in GitHub Issues.
+Rat currently supports syntax highlighting for common source formats and is usable as a lightweight file viewer. It is still intentionally smaller than `bat`.
 
-### Supported Languages
+## Supported Languages
 
 Rat currently supports syntax highlighting for:
 - **Python** (.py) - Keywords, comments, strings, and numbers
@@ -53,8 +74,7 @@ Performance improvements help the tool handle large files efficiently through bu
 
 This project is licensed under the MIT License. See the LICENSE file for details.
 
-
-### 🖌️ Attribution
+## 🖌️ Attribution
 
 The Go Gopher was originally designed by [Renee French](https://reneefrench.blogspot.com/).  
 Used under the [Creative Commons Attribution 4.0 License](https://creativecommons.org/licenses/by/4.0/).  
